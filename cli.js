@@ -8,7 +8,7 @@ const flags = yargs.usage('$0: Usage <cmd> [options]')
         command: 'search',
         desc: 'give a search term',
         builder: (yargs) => {
-            return yargs.option('id', {
+            return yargs.option('i', {
                 alias: 'id',
                 describe: 'search using a id number'
             }).option('t', {
