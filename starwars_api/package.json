@@ -22,6 +22,7 @@
   "homepage": "https://github.com/bryan-bravo/CS4220Midterm#readme",
   "dependencies": {
     "inquirer": "^5.1.0",
-    "yargs": "^11.0.0"
+    "yargs": "^11.0.0",
+    "calls": "file:../calls"
   }
 }
