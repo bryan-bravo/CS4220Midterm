@@ -2,14 +2,15 @@
 //Midterm
 
 const inquirer = require('inquirer'),
-      url=require('calls')
+      url=require('calls'),
+      catArray=['films','people','planets','species','starships','vehicles']
 
-const choices=()=>{
+const choices=(choiceArray,message,name)=>{
     return inquirer.prompt([{
         type: 'list',
-        message:'Select a field to search',
-        name:'Catagories',
-        choices:catArray,
+        message:message,
+        name:name,
+        choices:choiceArray,
         validate: (input) =>{
             return true
         }
@@ -30,34 +31,70 @@ const main = (id, term) => {
         value=id;
     }
     
-    choices().then(res=>{
+    choices(catArray,'Select a field to search','Catagories').then(res=>{
         url.info(selection,res.Catagories,value)
         .then(result =>{
             result.results.forEach(element=>{
                 results.push(element)
             })
-            print(results)
-        })
-        
-    // })
-    // catArray.forEach(category=>{
-    //     url.info(selection,category,value)
-    //     .then(result =>{
-    //         results.push(result)
-    //         console.log(result)
-    //     })
+            if(results.length<1){
+                console.log("No results were returned")
+            }
+            else{
+                printSelection(res.Catagories,results)
+            }
+        })        
     })
 }
 
-const print = (results) => {
+const printSelection = (catagory,results) => {
+    switch(catagory){
+        case 'films':
+            printFilm(results)
+            break;
+        case 'people':
+            printPeople(results)
+            break;
+        case 'planets':
+            printPlanets(results)
+            break;
+        case 'species':
+            printSpecies(results)
+            break;
+        case 'starships':
+            printStarships(results)
+            break;
+        case 'vehicles':
+            printVehicles(results)
+            break;
+        default:
+            console.log('Something went wrong with the request')
+    }
+}
+
+const printFilm=(results)=>{
     console.log(results)
 }
 
-const search = (url) => {
-
+const printPeople=(results)=>{
+    console.log(results)
 }
 
-const catArray=['films','people','planets','species','starships','vehicles'];
+const printPlanets=(results)=>{
+    console.log(results)
+}
+
+const printSpecies=(results)=>{
+    console.log(results)
+}
+
+const printStarships=(results)=>{
+    console.log(results)
+}
+
+const printVehicles=(results)=>{
+    console.log(results)
+}
 
 module.exports = {
     main

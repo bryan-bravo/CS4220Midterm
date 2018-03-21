@@ -18,6 +18,12 @@ exports.info = (selection,category,term) => {
         return null;
 }
 
+exports.link = (apiURL)=>{
+    return superagent.get(`${apiURL}`)
+    .then(response=>response.body)
+    .catch(error=>error.response.body)
+}
+
 
 
 
