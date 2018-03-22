@@ -2,8 +2,8 @@
 //Midterm
 
 const inquirer = require('inquirer'),
-      url=require('calls'),
-      catArray=['films','people','planets','species','starships','vehicles']
+    url=require('calls'),
+    catArray=['films','people','planets','species','starships','vehicles']
 
 const choicesList=(choiceArray,message,name)=>{
     return inquirer.prompt([{
@@ -43,8 +43,24 @@ const main = (id, term) => {
     }
     else if(!term && id){
         selection='id'
-        value=id;
+        value=id
         fetch(selection,value)
+    } else if(!term && !id) {
+        inquirer.prompt([{
+            type: 'input',
+            name: 'search_term',
+            message: 'Enter a term to search for.',
+            validate: (input) => {
+                if(input.length<1) 
+                    console.log('Please enter a term to search for. (Cannot be blank)')
+                else
+                    return true
+            }
+        }]).then(answer => {
+            selection='term'
+            value=answer['search_term']
+            search(selection,value)
+        })
     }
     
     
@@ -54,48 +70,48 @@ const search=(selection,value)=>{
     let results=[];
     choicesList(catArray,'Select a field to search','Catagories').then(res=>{
         url.info(selection,res.Catagories,value)
-        .then(result =>{
-            result.results.forEach(element=>{
-                results.push(element)
-            })
-            if(results.length<1){
-                console.log("No results were returned")
-            }
-            else{
-                let nameList=[]
-                let resultList=[]
+            .then(result =>{
+                result.results.forEach(element=>{
+                    results.push(element)
+                })
+                if(results.length<1){
+                    console.log("No results were returned")
+                }
+                else{
+                    let nameList=[]
+                    let resultList=[]
                 
-                results.forEach(element=>{
-                    if(res.Catagories=='films')
-                        nameList.push(element.title)    
-                    else
-                        nameList.push(element.name)
-                })
-                choicesCheckbox(nameList,'Select what to examine in detail','Selection')
-                .then(result=>{
-                    if(res.Catagories=='films')
-                        resultList=reduceChoicesFilm(results,result.Selection)
-                    else
-                        resultList=reduceChoices(results,result.Selection)
-                    resultList.forEach(element=>{
-                        printSelection(res.Catagories,element)
-                    })    
-                })
-            }
-        })        
+                    results.forEach(element=>{
+                        if(res.Catagories=='films')
+                            nameList.push(element.title)    
+                        else
+                            nameList.push(element.name)
+                    })
+                    choicesCheckbox(nameList,'Select what to examine in detail','Selection')
+                        .then(result=>{
+                            if(res.Catagories=='films')
+                                resultList=reduceChoicesFilm(results,result.Selection)
+                            else
+                                resultList=reduceChoices(results,result.Selection)
+                            resultList.forEach(element=>{
+                                printSelection(res.Catagories,element)
+                            })    
+                        })
+                }
+            })        
     })
 }
 
 const fetch=(selection,value)=>{
     choicesList(catArray,'Select a field to search','Catagories').then(res=>{
         url.info(selection,res.Catagories,value)
-        .then(result =>{
-            if(result.detail=='Not found')
-                console.log("No Results Were Found")
-            else{
-                printSelection(res.Catagories,result)
-            }
-        })        
+            .then(result =>{
+                if(result.detail=='Not found')
+                    console.log("No Results Were Found")
+                else{
+                    printSelection(res.Catagories,result)
+                }
+            })        
     })
 }
 
@@ -126,26 +142,26 @@ const reduceChoicesFilm=(current,reduce)=>{
 }
 const printSelection = (catagory,result) => {
     switch(catagory){
-        case 'films':
-            printFilm(result)
-        break;
-        case 'people':
-            printPeople(result)
-        break;
-        case 'planets':
-            printPlanets(result)
-            break;
-        case 'species':
-            printSpecies(result)
-            break;
-        case 'starships':
-            printStarships(result)
-        break;
-        case 'vehicles':
-            printVehicles(result)
-            break;
-        default:
-            console.log('Something went wrong with the request')
+    case 'films':
+        printFilm(result)
+        break
+    case 'people':
+        printPeople(result)
+        break
+    case 'planets':
+        printPlanets(result)
+        break
+    case 'species':
+        printSpecies(result)
+        break
+    case 'starships':
+        printStarships(result)
+        break
+    case 'vehicles':
+        printVehicles(result)
+        break
+    default:
+        console.log('Something went wrong with the request')
     }
 }
 
@@ -287,7 +303,7 @@ const printStarships=(result)=>{
     let {name,model,manufacturer,cost_in_credits,length,max_atmosphering_speed,crew,passengers,cargo_capacity,
         consumables,hyperdrive_rating,MGLT,starship_class,pilots,films}=result
     
-        let information=
+    let information=
         `
         ${name}
          
@@ -309,12 +325,12 @@ const printStarships=(result)=>{
         ${pilots.length==0 ? `No famous pilots have used  the ${name}` : `${pilots}`}
     
         `
-        console.log(information)
+    console.log(information)
 }
 
 const printVehicles=(result)=>{
     let {name,model,manufacturer,cost_in_credits,length,max_atmosphering_speed,crew,passengers,cargo_capacity,
-    consumables,vehicle_class,pilots,films}=result
+        consumables,vehicle_class,pilots,films}=result
     
     let information=
     `

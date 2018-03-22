@@ -12,6 +12,7 @@ const flags = yargs.usage('$0: Usage <cmd> [options]')
                 alias: 'term',
                 describe: 'search using a term'
             })
+            // .demandOption('t')
         },
         handler: (argv) => { app.main(false,argv.term) }
     })
@@ -26,5 +27,7 @@ const flags = yargs.usage('$0: Usage <cmd> [options]')
         },
         handler: (argv) => {app.main(argv.id,false)}
     })
+    .showHelpOnFail(true)
+    .demandCommand(1, '') // show help if no commands given
     .help('help')
     .argv
