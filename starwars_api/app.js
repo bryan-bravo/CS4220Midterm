@@ -194,6 +194,25 @@ const printStarships=(result)=>{
     
         let information=
         `
+        ${name}
+         
+        Model: ${model}
+        Manufacturer: ${manufacturer}
+        Price: ${cost_in_credits} Credits
+        Starship Class: ${starship_class}
+        -------------------------
+        Specifications:
+        It can support a crew of ${crew} and can carry ${passengers} passengers
+        Atmospheric Speed is ${max_atmosphering_speed} and is ${length} meters long
+        Hyperdrive Rating: ${hyperdrive_rating}
+        MegaLight Speed: ${MGLT}
+        -------------------------
+        Film Appearances:
+        ${films.length==0 ? `No Film Appearances` : `${films}`}
+        -------------------------
+        Famous Pilots:
+        ${pilots.length==0 ? `No Famous Pilots Have Used this Vehicle` : `${pilots}`}
+    
         `
         console.log(information)
 }
