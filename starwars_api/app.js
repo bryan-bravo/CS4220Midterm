@@ -90,7 +90,7 @@ const fetch=(selection,value)=>{
     choicesList(catArray,'Select a field to search','Catagories').then(res=>{
         url.info(selection,res.Catagories,value)
         .then(result =>{
-            if(result.length==0)
+            if(result.detail=='Not found')
                 console.log("No Results Were Found")
             else{
                 printSelection(res.Catagories,result)
