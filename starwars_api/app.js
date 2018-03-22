@@ -99,26 +99,28 @@ Released: ${release_date}
 
 ------------------------
 Notable Characters:
-${characters}
+${characters.length==0 ? `No Notable Characters` : `${characters}`}
 
 ------------------------
 Planets:
-${planets}
+${planets.length==0 ? `No Recorded Planets` :`${planets}` }
 
 ------------------------
 Ships and Vehicles:
-${starships}
-${vehicles}
+${starships.length==0 ? `No Notable Ships` :`${starships}` }
+${vehicles.length==0 ? `No Notable Vehicles` : `${vehicles}`}
 
 -----------------------
 Species in the movie:
-${species}
+${species.length==0 ? `No Notable Species` : `${species}` }
 
 -----------------------
 Extras:
 
 ${opening_crawl}
-    `
+
+
+`
     console.log(information)
 }
 
@@ -126,6 +128,22 @@ const printPeople=(result)=>{
     let {name,height,mass,hair_color,skin_color,eye_color,birth_year,gender,homeworld,films,species,vehicles,starships}=result
     let information=
     `
+    ${name}
+    ------------
+    Height:  ${hair_color.length < 8 ? `${height} cm` : `${height} cm\t`}\tWeight: ${mass} kg\tGender: ${gender}
+    Hair:    ${hair_color}\tEye: ${eye_color}\tSkin: ${skin_color}
+    Born:    ${birth_year}
+    Species: ${species}
+    Home World: ${homeworld}
+
+    ---------------------------------------------------------------
+    Vehicles Used:
+    ${starships.length==0 ? `No Notable Ships` :`${starships}` }
+    ${vehicles.length==0 ? `No Notable Vehicles` : `${vehicles}`}
+    ---------------------------------------------------------------
+    Film Appearances:
+    ${films.length==0 ? `No Film Appearances` : `${films}`}
+
     `
     console.log(information)
 }
@@ -176,10 +194,11 @@ const printVehicles=(result)=>{
     Atmospheric Speed is ${max_atmosphering_speed} and is ${length} meters long
     -------------------------
     Films:
-    ${films}
+    ${films.length==0 ? `No Film Appearances` : `${films}`}
     -------------------------
     Famous Pilots:
-    ${pilots}
+    ${pilots.length==0 ? `No Famous Pilots Have Used this Vehicle` : `${pilots}`}
+
     `
     console.log(information)
 }
