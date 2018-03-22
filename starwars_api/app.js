@@ -33,19 +33,25 @@ const choicesCheckbox=(choiceArray,message,name)=>{
 }
 
 const main = (id, term) => {
-    let results=[];
     let selection='';
     let value='';
     
     if(!id && term){
         value=term
         selection='term'
+        search(selection,value)
     }
     else if(!term && id){
         selection='id'
         value=id;
+        fetch(selection,value)
     }
     
+    
+}
+
+const search=(selection,value)=>{
+    let results=[];
     choicesList(catArray,'Select a field to search','Catagories').then(res=>{
         url.info(selection,res.Catagories,value)
         .then(result =>{
@@ -71,8 +77,23 @@ const main = (id, term) => {
                         resultList=reduceChoicesFilm(results,result.Selection)
                     else
                         resultList=reduceChoices(results,result.Selection)
-                    printSelection(res.Catagories,resultList)    
+                    resultList.forEach(element=>{
+                        printSelection(res.Catagories,element)
+                    })    
                 })
+            }
+        })        
+    })
+}
+
+const fetch=(selection,value)=>{
+    choicesList(catArray,'Select a field to search','Catagories').then(res=>{
+        url.info(selection,res.Catagories,value)
+        .then(result =>{
+            if(result.length==0)
+                console.log("No Results Were Found")
+            else{
+                printSelection(res.Catagories,result)
             }
         })        
     })
@@ -103,37 +124,25 @@ const reduceChoicesFilm=(current,reduce)=>{
     })
     return reducedList
 }
-const printSelection = (catagory,results) => {
+const printSelection = (catagory,result) => {
     switch(catagory){
         case 'films':
-            results.forEach(element=>{
-                printFilm(element)
-            })
+            printFilm(result)
         break;
         case 'people':
-            results.forEach(element=>{
-                printPeople(element)
-            })
+            printPeople(result)
         break;
         case 'planets':
-            results.forEach(element=>{
-                printPlanets(element)
-            })
+            printPlanets(result)
             break;
         case 'species':
-            results.forEach(element=>{
-                printSpecies(element)
-            })
+            printSpecies(result)
             break;
         case 'starships':
-            results.forEach(element=>{
-                printStarships(element)
-            })
+            printStarships(result)
         break;
         case 'vehicles':
-            results.forEach(element=>{
-                printVehicles(element)
-            })
+            printVehicles(result)
             break;
         default:
             console.log('Something went wrong with the request')
