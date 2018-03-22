@@ -153,6 +153,28 @@ const printPlanets=(result)=>{
 
     let information=
     `
+    ${name}
+    ----------------------------------------------
+    Characteristics:
+
+    Day Length: ${rotation_period} Earth Hours
+    Year Length:${orbital_period} Earth Days
+    Climate: ${climate} 
+    Terrain: ${terrain}
+    Water: ${surface_water}% Water 
+    Planet Diameter: ${diameter} km
+    Population: ${population} Citizens
+
+    ----------------------------------------------
+    Notable Residents:
+
+    ${residents.length==0 ? `No Notable Residents Reside on ${name}` : `${residents}`}
+
+    ----------------------------------------------
+    Film Appearances:
+    
+    ${films.length==0 ? `No Film Appearances` : `${films}`}
+
     `
     console.log(information)
 }
@@ -193,7 +215,7 @@ const printVehicles=(result)=>{
     It can support a crew of ${crew} and can carry ${passengers} passengers
     Atmospheric Speed is ${max_atmosphering_speed} and is ${length} meters long
     -------------------------
-    Films:
+    Film Appearances:
     ${films.length==0 ? `No Film Appearances` : `${films}`}
     -------------------------
     Famous Pilots:
