@@ -187,7 +187,7 @@ Species in the movie:
 ${species.length==0 ? `No Notable Species` : `${species}` }
 
 -----------------------
-Extras:
+Opening Crawl:
 
 ${opening_crawl}
 
