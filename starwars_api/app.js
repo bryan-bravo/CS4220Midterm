@@ -184,6 +184,36 @@ const printSpecies=(result)=>{
     
     let information=
     `
+    ${name}
+    ----------------------------
+    Statistics
+
+    Avg. Height:   ${average_height}
+    Avg. LifeSpan: ${average_lifespan}
+    ----------------------------
+    Colorings
+
+    Skin Colors: ${skin_colors}
+    Hair Colors: ${hair_colors}
+    Eye  Colors: ${eye_colors}
+    ----------------------------
+    World
+
+    Home World: ${homeworld}
+    Language: ${language}
+    ----------------------------
+    Taxonomy
+    
+    Designation: ${designation}
+    Classification: ${classification}
+    ----------------------------------------------
+    Notable Characters:
+
+    ${people.length==0 ? `No Notable Characters are ${name}` : `${people}`}
+    -------------------------
+    Film Appearances:
+
+    ${films.length==0 ? `No Film Appearances` : `${films}`}
     `
     console.log(information)
 }
@@ -211,7 +241,7 @@ const printStarships=(result)=>{
         ${films.length==0 ? `No Film Appearances` : `${films}`}
         -------------------------
         Famous Pilots:
-        ${pilots.length==0 ? `No Famous Pilots Have Used this Vehicle` : `${pilots}`}
+        ${pilots.length==0 ? `No famous pilots have used  the ${name}` : `${pilots}`}
     
         `
         console.log(information)
@@ -238,7 +268,7 @@ const printVehicles=(result)=>{
     ${films.length==0 ? `No Film Appearances` : `${films}`}
     -------------------------
     Famous Pilots:
-    ${pilots.length==0 ? `No Famous Pilots Have Used this Vehicle` : `${pilots}`}
+    ${pilots.length==0 ? `No Famous Pilots Have Used the ${name}` : `${pilots}`}
 
     `
     console.log(information)
