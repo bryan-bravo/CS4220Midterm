@@ -1,30 +1,32 @@
 //Patrick Flinner, Bryan Bravo, Gevorg K., Kevin Lam
 //Midterm
 
-const inquirer = require('inquirer'),
-      url=require('calls'),
-      catArray=['films','people','planets','species','starships','vehicles']
+const
+    inquirer = require('inquirer'),
+    url = require('calls')
+    //catArray = ['films', 'people', 'planets', 'species', 'starships', 'vehicles'],
 
-const choicesList=(choiceArray,message,name)=>{
+
+const choicesList = (choiceArray, message, name) => {
     return inquirer.prompt([{
         type: 'list',
-        message:message,
-        name:name,
-        choices:choiceArray,
-        validate: (input) =>{
+        message: message,
+        name: name,
+        choices: choiceArray,
+        validate: (input) => {
             return true
         }
     }])
 }
 
-const choicesCheckbox=(choiceArray,message,name)=>{
+const choicesCheckbox = (choiceArray, message, name) => {
     return inquirer.prompt([{
         type: 'checkbox',
-        message:message,
-        name:name,
-        choices:choiceArray,
-        validate: (input) =>{
-            if(input.length<1)
+        message: message,
+        name: name,
+        choices: choiceArray,
+        validate: (input) => {
+            if (input.length < 1)
                 console.log('Please select at least one option')
             else
                 return true
@@ -33,105 +35,110 @@ const choicesCheckbox=(choiceArray,message,name)=>{
 }
 
 const main = (id, term) => {
-    let selection='';
-    let value='';
-    
-    if(!id && term){
-        value=term
-        selection='term'
-        search(selection,value)
+    let selection = '';
+    let value = '';
+
+    if (!id && term) {
+        value = term
+        selection = 'term'
+        search(selection, value)
+    } else if (!term && id) {
+        selection = 'id'
+        value = id;
+        fetch(selection, value)
     }
-    else if(!term && id){
-        selection='id'
-        value=id;
-        fetch(selection,value)
-    }
-    
-    
+
 }
 
-const search=(selection,value)=>{
-    let results=[];
-    choicesList(catArray,'Select a field to search','Catagories').then(res=>{
-        url.info(selection,res.Catagories,value)
-        .then(result =>{
-            result.results.forEach(element=>{
-                results.push(element)
-            })
-            if(results.length<1){
-                console.log("No results were returned")
-            }
-            else{
-                let nameList=[]
-                let resultList=[]
-                
-                results.forEach(element=>{
-                    if(res.Catagories=='films')
-                        nameList.push(element.title)    
-                    else
-                        nameList.push(element.name)
+const search = (selection, value) => {
+    url.getCategories().then(result => {
+        catArray = Object.keys(result)
+
+        let results = [];
+        choicesList(catArray, 'Select a field to search', 'Catagories').then(res => {
+            url.info(selection, res.Catagories, value)
+                .then(result => {
+                    result.results.forEach(element => {
+                        results.push(element)
+                    })
+                    if (results.length < 1) {
+                        console.log("No results were returned")
+                    } else {
+                        let nameList = []
+                        let resultList = []
+
+                        results.forEach(element => {
+                            if (res.Catagories == 'films')
+                                nameList.push(element.title)
+                            else
+                                nameList.push(element.name)
+                        })
+                        choicesCheckbox(nameList, 'Select what to examine in detail', 'Selection')
+                            .then(result => {
+                                if (res.Catagories == 'films')
+                                    resultList = reduceChoicesFilm(results, result.Selection)
+                                else
+                                    resultList = reduceChoices(results, result.Selection)
+                                resultList.forEach(element => {
+                                    printSelection(res.Catagories, element)
+                                })
+                            })
+                    }
                 })
-                choicesCheckbox(nameList,'Select what to examine in detail','Selection')
-                .then(result=>{
-                    if(res.Catagories=='films')
-                        resultList=reduceChoicesFilm(results,result.Selection)
-                    else
-                        resultList=reduceChoices(results,result.Selection)
-                    resultList.forEach(element=>{
-                        printSelection(res.Catagories,element)
-                    })    
-                })
-            }
-        })        
-    })
-}
-
-const fetch=(selection,value)=>{
-    choicesList(catArray,'Select a field to search','Catagories').then(res=>{
-        url.info(selection,res.Catagories,value)
-        .then(result =>{
-            if(result.detail=='Not found')
-                console.log("No Results Were Found")
-            else{
-                printSelection(res.Catagories,result)
-            }
-        })        
-    })
-}
-
-const reduceChoices=(current,reduce)=>{
-    let reducedList=[]
-    reduce.forEach(element=>{
-        index=current.findIndex(remove=>{
-            return (element===remove.name)
         })
-        if(index!=-1){
+    })
+}
+
+const fetch = (selection, value) => {
+    url.getCategories().then(result => {
+        catArray = Object.keys(result)
+
+        choicesList(catArray, 'Select a field to search', 'Catagories').then(res => {
+            url.info(selection, res.Catagories, value)
+                .then(result => {
+                    if (result.detail == 'Not found')
+                        console.log("No Results Were Found")
+                    else {
+                        printSelection(res.Catagories, result)
+                    }
+                })
+        })
+    })
+}
+
+const reduceChoices = (current, reduce) => {
+    let reducedList = []
+    reduce.forEach(element => {
+        index = current.findIndex(remove => {
+            return (element === remove.name)
+        })
+        if (index != -1) {
             reducedList.push(current[index])
         }
     })
     return reducedList
 }
 
-const reduceChoicesFilm=(current,reduce)=>{
-    let reducedList=[]
-    reduce.forEach(element=>{
-        index=current.findIndex(remove=>{
-            return (element===remove.title)
+const reduceChoicesFilm = (current, reduce) => {
+    let reducedList = []
+    reduce.forEach(element => {
+        index = current.findIndex(remove => {
+            return (element === remove.title)
         })
-        if(index!=-1){
+        if (index != -1) {
             reducedList.push(current[index])
         }
     })
     return reducedList
 }
-const printSelection = (catagory,result) => {
-    switch(catagory){
+const printSelection = (catagory, result) => {
+    switch (catagory) {
         case 'films':
             printFilm(result)
-        break;
+            break;
         case 'people':
             printPeople(result)
-        break;
+            break;
         case 'planets':
             printPlanets(result)
             break;
@@ -140,7 +147,7 @@ const printSelection = (catagory,result) => {
             break;
         case 'starships':
             printStarships(result)
-        break;
+            break;
         case 'vehicles':
             printVehicles(result)
             break;
@@ -149,10 +156,10 @@ const printSelection = (catagory,result) => {
     }
 }
 
-const printFilm=(result)=>{
-    let {title,episode_id,opening_crawl,director,producer,release_date,characters,planets,starships,vehicles,species}=result
-    let information=
-`
+const printFilm = (result) => {
+        let { title, episode_id, opening_crawl, director, producer, release_date, characters, planets, starships, vehicles, species } = result
+        let information =
+            `
 Star Wars 
 Episode ${episode_id}
 ${title}
