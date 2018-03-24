@@ -1,6 +1,6 @@
 const 
     superagent = require('superagent'),
-    url='https://swapi.co/api'
+    url=require('./config.json').url
 
 const _fetch = (command) => {
     return superagent.get(`${url}/${command}`)
@@ -8,14 +8,12 @@ const _fetch = (command) => {
         .catch(error => error.response.body)
 }
 
-exports.info = (selection,category,term) => {
-    
-    if(selection=='id')
-        return _fetch(`${category}/${term}`)
-    else if(selection=='term')
-        return _fetch(`${category}/?search=${term}`)
-    else
-        return null;
+exports.search = (category,term) => {
+    return _fetch(`${category}/?search=${term}`)
+}
+
+exports.fetch = (category,id) => {
+    return _fetch(`${category}/${id}`)
 }
 
 exports.link = (apiURL)=>{

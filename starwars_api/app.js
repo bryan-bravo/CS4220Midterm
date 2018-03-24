@@ -32,44 +32,41 @@ const choicesCheckbox=(choiceArray,message,name)=>{
     }])
 }
 
-const main = (id, term) => {
-    let selection='';
-    let value='';
-    
-    if(!id && term){
-        value=term
-        selection='term'
-        search(selection,value)
+const main = (type, query) => {
+    // type is either "SEARCH" or "FETCH"
+    // query is either search query or id to fetch
+    if(!type && !query) {
+        console.log("Bad parameters.")
+        return;
     }
-    else if(!term && id){
-        selection='id'
-        value=id
-        fetch(selection,value)
-    } else if(!term && !id) {
-        inquirer.prompt([{
-            type: 'input',
-            name: 'search_term',
-            message: 'Enter a term to search for.',
-            validate: (input) => {
-                if(input.length<1) 
-                    console.log('Please enter a term to search for. (Cannot be blank)')
-                else
-                    return true
-            }
-        }]).then(answer => {
-            selection='term'
-            value=answer['search_term']
-            search(selection,value)
-        })
-    }
-    
-    
+    if(type == "SEARCH") {
+        if(query) {
+            search(query)
+        } else {
+            // should normally provide query in cli but for the future, prompt for query if not provided
+            inquirer.prompt([{
+                type: 'input',
+                name: 'search_term',
+                message: 'Enter a term to search for.',
+                validate: (input) => {
+                    if(input.length<1) 
+                        console.log('Please enter a term to search for. (Cannot be blank)')
+                    else
+                        return true
+                }
+            }]).then(answer => {
+                search(answer['search_term'])
+            })
+        }  
+    } else if(type=="FETCH") {
+        fetch(query)
+    }    
 }
 
-const search=(selection,value)=>{
+const search=(query)=>{
     let results=[];
     choicesList(catArray,'Select a field to search','Catagories').then(res=>{
-        url.info(selection,res.Catagories,value)
+        url.search(res.Catagories,query)
             .then(result =>{
                 result.results.forEach(element=>{
                     results.push(element)
@@ -102,9 +99,9 @@ const search=(selection,value)=>{
     })
 }
 
-const fetch=(selection,value)=>{
+const fetch=(id)=>{
     choicesList(catArray,'Select a field to search','Catagories').then(res=>{
-        url.info(selection,res.Catagories,value)
+        url.fetch(res.Catagories,id)
             .then(result =>{
                 if(result.detail=='Not found')
                     console.log("No Results Were Found")

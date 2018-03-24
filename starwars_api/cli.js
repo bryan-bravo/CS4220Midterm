@@ -5,27 +5,18 @@ const
 
 const flags = yargs.usage('$0: Usage <cmd> [options]')
     .command({
-        command: 'search',
-        desc: 'Search using a term',
-        builder: (yargs) => {
-            return yargs.option('t', {
-                alias: 'term',
-                describe: 'search using a term'
-            })
-            // .demandOption('t')
-        },
-        handler: (argv) => { app.main(false,argv.term) }
+        command: 'search <query>',
+        desc: 'Search for query',
+        handler: (argv) => { 
+            app.main("SEARCH", argv.query) 
+        }
     })
     .command({
-        command: 'fetch',
+        command: 'fetch <id>',
         desc:'Fetch data using an id number',
-        builder: (yargs)=>{
-            return yargs.option('i',{
-                alias:'id',
-                describe: 'fetch data using an id number'
-            })
-        },
-        handler: (argv) => {app.main(argv.id,false)}
+        handler: (argv) => { 
+            app.main("FETCH", argv.id) 
+        }
     })
     .showHelpOnFail(true)
     .demandCommand(1, '') // show help if no commands given

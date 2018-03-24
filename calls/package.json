@@ -9,6 +9,7 @@
   "author": "Patrick Flinner, Kevin Lam, Bryan Bravo, Gevorg Khachatrian",
   "license": "ISC",
   "dependencies": {
+    "npm": "^5.8.0",
     "superagent": "^3.8.2"
   }
 }
