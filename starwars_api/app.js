@@ -2,32 +2,32 @@
 //Midterm
 
 const inquirer = require('inquirer'),
-    url=require('calls'),
-    chalk=require('chalk'),
+    url = require('calls'),
+    chalk = require('chalk'),
     ora = require('ora'),
-    catArray=['films','people','planets','species','starships','vehicles']
-    
+    catArray = ['films', 'people', 'planets', 'species', 'starships', 'vehicles']
 
-const choicesList=(choiceArray,message,name)=>{
+
+const choicesList = (choiceArray, message, name) => {
     return inquirer.prompt([{
         type: 'list',
-        message:message,
-        name:name,
-        choices:choiceArray,
-        validate: (input) =>{
+        message: message,
+        name: name,
+        choices: choiceArray,
+        validate: (input) => {
             return true
         }
     }])
 }
 
-const choicesCheckbox=(choiceArray,message,name)=>{
+const choicesCheckbox = (choiceArray, message, name) => {
     return inquirer.prompt([{
         type: 'checkbox',
-        message:message,
-        name:name,
-        choices:choiceArray,
-        validate: (input) =>{
-            if(input.length<1)
+        message: message,
+        name: name,
+        choices: choiceArray,
+        validate: (input) => {
+            if (input.length < 1)
                 console.log('Please select at least one option')
             else
                 return true
@@ -38,12 +38,12 @@ const choicesCheckbox=(choiceArray,message,name)=>{
 const main = (type, query) => {
     // type is either "SEARCH" or "FETCH"
     // query is either search query or id to fetch
-    if(!type && !query) {
+    if (!type && !query) {
         console.log("Bad parameters.")
         return;
     }
-    if(type == "SEARCH") {
-        if(query) {
+    if (type == "SEARCH") {
+        if (query) {
             search(query)
         } else {
             // should normally provide query in cli but for the future, prompt for query if not provided
@@ -52,7 +52,7 @@ const main = (type, query) => {
                 name: 'search_term',
                 message: 'Enter a term to search for.',
                 validate: (input) => {
-                    if(input.length<1) 
+                    if (input.length < 1)
                         console.log('Please enter a term to search for. (Cannot be blank)')
                     else
                         return true
@@ -60,128 +60,136 @@ const main = (type, query) => {
             }]).then(answer => {
                 search(answer['search_term'])
             })
-        }  
-    } else if(type=="FETCH") {
+        }
+    } else if (type == "FETCH") {
         fetch(query)
-    }    
-}
-
-const search=(query)=>{
-    let results=[];
-    choicesList(catArray,'Select a field to search','Catagories').then(res=>{
-        url.search(res.Catagories,query)
-            .then(result =>{
-                result.results.forEach(element=>{
-                    results.push(element)
-                })
-                if(results.length<1){
-                    console.log("No results were returned")
-                }
-                else{
-                    let nameList=[]
-                    let resultList=[]
-                
-                    results.forEach(element=>{
-                        if(res.Catagories=='films')
-                            nameList.push(element.title)    
-                        else
-                            nameList.push(element.name)
-                    })
-                    choicesCheckbox(nameList,'Select what to examine in detail','Selection')
-                        .then(result=>{
-                            if(res.Catagories=='films')
-                                resultList=reduceChoicesFilm(results,result.Selection)
-                            else
-                                resultList=reduceChoices(results,result.Selection)
-                            resultList.forEach(element=>{
-                                printSelection(res.Catagories,element)
-                            })    
-                        })
-                }
-            })        
-    })
-}
-
-const fetch=(id)=>{
-    choicesList(catArray,'Select a field to search','Catagories').then(res=>{
-        url.fetch(res.Catagories,id)
-            .then(result =>{
-                if(result.detail=='Not found')
-                    console.log("No Results Were Found")
-                else{
-                    printSelection(res.Catagories,result)
-                }
-            })        
-    })
-}
-
-const reduceChoices=(current,reduce)=>{
-    let reducedList=[]
-    reduce.forEach(element=>{
-        index=current.findIndex(remove=>{
-            return (element===remove.name)
-        })
-        if(index!=-1){
-            reducedList.push(current[index])
-        }
-    })
-    return reducedList
-}
-
-const reduceChoicesFilm=(current,reduce)=>{
-    let reducedList=[]
-    reduce.forEach(element=>{
-        index=current.findIndex(remove=>{
-            return (element===remove.title)
-        })
-        if(index!=-1){
-            reducedList.push(current[index])
-        }
-    })
-    return reducedList
-}
-const printSelection = (catagory,result) => {
-    switch(catagory){
-    case 'films':
-        printFilm(result)
-        break
-    case 'people':
-        printPeople(result)
-        break
-    case 'planets':
-        printPlanets(result)
-        break
-    case 'species':
-        printSpecies(result)
-        break
-    case 'starships':
-        printStarships(result)
-        break
-    case 'vehicles':
-        printVehicles(result)
-        break
-    default:
-        console.log('Something went wrong with the request')
     }
 }
 
-const printFilm=(result)=>{
-    let {title,episode_id,opening_crawl,director,producer,release_date,characters,planets,starships,vehicles,species}=result
+const search = (query) => {
+    let results = [];
+    choicesList(catArray, 'Select a field to search', 'Catagories').then(res => {
+        url.search(res.Catagories, query)
+            .then(result => {
+                result.results.forEach(element => {
+                    results.push(element)
+                })
+                if (results.length < 1) {
+                    console.log("No results were returned")
+                }
+                else {
+                    let nameList = []
+                    let resultList = []
+
+                    results.forEach(element => {
+                        if (res.Catagories == 'films')
+                            nameList.push(element.title)
+                        else
+                            nameList.push(element.name)
+                    })
+                    choicesCheckbox(nameList, 'Select what to examine in detail', 'Selection')
+                        .then(result => {
+                            if (res.Catagories == 'films')
+                                resultList = reduceChoicesFilm(results, result.Selection)
+                            else
+                                resultList = reduceChoices(results, result.Selection)
+                            resultList.forEach(element => {
+                                printSelection(res.Catagories, element)
+                            })
+                        })
+                }
+            })
+    })
+}
+
+const fetch = (id) => {
+    choicesList(catArray, 'Select a field to search', 'Catagories').then(res => {
+        url.fetch(res.Catagories, id)
+            .then(result => {
+                if (result.detail == 'Not found')
+                    console.log("No Results Were Found")
+                else {
+                    printSelection(res.Catagories, result)
+                }
+            })
+    })
+}
+
+const reduceChoices = (current, reduce) => {
+    let reducedList = []
+    reduce.forEach(element => {
+        index = current.findIndex(remove => {
+            return (element === remove.name)
+        })
+        if (index != -1) {
+            reducedList.push(current[index])
+        }
+    })
+    return reducedList
+}
+
+const reduceChoicesFilm = (current, reduce) => {
+    let reducedList = []
+    reduce.forEach(element => {
+        index = current.findIndex(remove => {
+            return (element === remove.title)
+        })
+        if (index != -1) {
+            reducedList.push(current[index])
+        }
+    })
+    return reducedList
+}
+const printSelection = (catagory, result) => {
+    switch (catagory) {
+        case 'films':
+            printFilm(result)
+            break
+        case 'people':
+            printPeople(result)
+            break
+        case 'planets':
+            printPlanets(result)
+            break
+        case 'species':
+            printSpecies(result)
+            break
+        case 'starships':
+            printStarships(result)
+            break
+        case 'vehicles':
+            printVehicles(result)
+            break
+        default:
+            console.log('Something went wrong with the request')
+    }
+}
+
+const printFilm = (result) => {
+    let { title, episode_id, opening_crawl, director, producer, release_date, characters, planets, starships, vehicles, species } = result
     characters = characters.map((charURL) => {
         return url.fetchURL(charURL)
     })
     planets = planets.map((planetURL) => {
         return url.fetchURL(planetURL)
     })
-
-    const promiseArray = [characters, planets]
+    starships = starships.map((starshipsURL) => {
+        return url.fetchURL(starshipsURL)
+    })
+    vehicles = vehicles.map((mapURL) => {
+        return url.fetchURL(mapURL)
+    })
+    species = species.map(speciesURL => {
+        return url.fetchURL(speciesURL)
+    })
+    const promiseArray = [characters, planets,starships,vehicles,species]
 
     const spinner = ora('Fetching detailed information...').start();
-    Promise.all(promiseArray.map(Promise.all, Promise)).then(([characters, planets]) => {
+    Promise.all(promiseArray.map(Promise.all, Promise)).then(([characters, planets,starships,vehicles,species]) => {
         spinner.stop()
 
-        let information=
-        `
+        let information =
+            `
         ${chalk.bgBlue('Star Wars')}
         ${chalk.bgBlue('Episode ' + episode_id)}
         ${chalk.bgBlue(title)}
@@ -193,20 +201,20 @@ const printFilm=(result)=>{
         
         ------------------------
         ${chalk.bgWhite.black('Notable Characters:')}
-${characters.length==0 ? `No Notable Characters` : `${characters.map((character) => { return '        ' + character.name }).join('\r\n')}`}
+        ${characters.length == 0 ? `No Notable Characters` : `${characters.map((character) => { return '        ' + character.name }).join('\r\n')}`}
         
         ------------------------
         ${chalk.bgWhite.black('Planets:')}
-${planets.length==0 ? `No Recorded Planets` : `${planets.map((planet) => { return '        ' + planet.name }).join('\r\n')}`}
+        ${planets.length == 0 ? `No Recorded Planets` : `${planets.map((planet) => { return `\r\n\t` + planet.name })}`}
         
         ------------------------
         ${chalk.bgWhite.black('Ships and Vehicles:')}
-        ${starships.length==0 ? `No Notable Ships` :`${starships}` }
-        ${vehicles.length==0 ? `No Notable Vehicles` : `${vehicles}`}
+        ${starships.length == 0 ? `No Notable Ships` : `${starships.map((starship)=>{return `\r\n\t`+starship.name})}`}
+        ${vehicles.length == 0 ? `No Notable Vehicles` : `${vehicles.map((vehicle)=>{return `\r\n\t`+vehicle.name })}`}
         
         -----------------------
         ${chalk.bgWhite.black('Species in the movie:')}
-        ${species.length==0 ? `No Notable Species` : `${species}` }
+        ${species.length == 0 ? `No Notable Species` : `${species.map((species)=> { return `\r\n\t`+species.name})}`}
         
         -----------------------
         ${chalk.bgWhite.black('Extras:')}
@@ -215,17 +223,18 @@ ${planets.length==0 ? `No Recorded Planets` : `${planets.map((planet) => { retur
         
         
         `
-            console.log(information)
+        console.log(information)
     })
 
 
 
 }
 
-const printPeople=(result)=>{
-    let {name,height,mass,hair_color,skin_color,eye_color,birth_year,gender,homeworld,films,species,vehicles,starships}=result
-    let information=
-    `
+const printPeople = (result) => {
+    let { name, height, mass, hair_color, skin_color, eye_color, birth_year, gender, homeworld, films, species, vehicles, starships } = result
+    
+    let information =
+        `
     ${name}
     ------------
     Height:  ${hair_color.length < 8 ? `${height} cm` : `${height} cm\t`}\tWeight: ${mass} kg\tGender: ${gender}
@@ -236,21 +245,21 @@ const printPeople=(result)=>{
 
     ---------------------------------------------------------------
     Vehicles Used:
-    ${starships.length==0 ? `No Notable Ships` :`${starships}` }
-    ${vehicles.length==0 ? `No Notable Vehicles` : `${vehicles}`}
+    ${starships.length == 0 ? `No Notable Ships` : `${starships}`}
+    ${vehicles.length == 0 ? `No Notable Vehicles` : `${vehicles}`}
     ---------------------------------------------------------------
     Film Appearances:
-    ${films.length==0 ? `No Film Appearances` : `${films}`}
+    ${films.length == 0 ? `No Film Appearances` : `${films}`}
 
     `
     console.log(information)
 }
 
-const printPlanets=(result)=>{
-    let {name,rotation_period,orbital_period,diameter,climate,gravity,terrain,surface_water,population,residents,films}=result
+const printPlanets = (result) => {
+    let { name, rotation_period, orbital_period, diameter, climate, gravity, terrain, surface_water, population, residents, films } = result
 
-    let information=
-    `
+    let information =
+        `
     ${name}
     ----------------------------------------------
     Characteristics:
@@ -266,22 +275,22 @@ const printPlanets=(result)=>{
     ----------------------------------------------
     Notable Residents:
 
-    ${residents.length==0 ? `No Notable Residents Reside on ${name}` : `${residents}`}
+    ${residents.length == 0 ? `No Notable Residents Reside on ${name}` : `${residents}`}
 
     ----------------------------------------------
     Film Appearances:
     
-    ${films.length==0 ? `No Film Appearances` : `${films}`}
+    ${films.length == 0 ? `No Film Appearances` : `${films}`}
 
     `
     console.log(information)
 }
 
-const printSpecies=(result)=>{
-    let {name,classification,designation,average_height,skin_colors,hair_colors,eye_colors,average_lifespan,homeworld,language,people,films}=result
-    
-    let information=
-    `
+const printSpecies = (result) => {
+    let { name, classification, designation, average_height, skin_colors, hair_colors, eye_colors, average_lifespan, homeworld, language, people, films } = result
+
+    let information =
+        `
     ${name}
     ----------------------------
     Statistics
@@ -307,20 +316,20 @@ const printSpecies=(result)=>{
     ----------------------------------------------
     Notable Characters:
 
-    ${people.length==0 ? `No Notable Characters are ${name}` : `${people}`}
+    ${people.length == 0 ? `No Notable Characters are ${name}` : `${people}`}
     -------------------------
     Film Appearances:
 
-    ${films.length==0 ? `No Film Appearances` : `${films}`}
+    ${films.length == 0 ? `No Film Appearances` : `${films}`}
     `
     console.log(information)
 }
 
-const printStarships=(result)=>{
-    let {name,model,manufacturer,cost_in_credits,length,max_atmosphering_speed,crew,passengers,cargo_capacity,
-        consumables,hyperdrive_rating,MGLT,starship_class,pilots,films}=result
-    
-    let information=
+const printStarships = (result) => {
+    let { name, model, manufacturer, cost_in_credits, length, max_atmosphering_speed, crew, passengers, cargo_capacity,
+        consumables, hyperdrive_rating, MGLT, starship_class, pilots, films } = result
+
+    let information =
         `
         ${name}
          
@@ -336,21 +345,21 @@ const printStarships=(result)=>{
         MegaLight Speed: ${MGLT}
         -------------------------
         Film Appearances:
-        ${films.length==0 ? `No Film Appearances` : `${films}`}
+        ${films.length == 0 ? `No Film Appearances` : `${films}`}
         -------------------------
         Famous Pilots:
-        ${pilots.length==0 ? `No famous pilots have used  the ${name}` : `${pilots}`}
+        ${pilots.length == 0 ? `No famous pilots have used  the ${name}` : `${pilots}`}
     
         `
     console.log(information)
 }
 
-const printVehicles=(result)=>{
-    let {name,model,manufacturer,cost_in_credits,length,max_atmosphering_speed,crew,passengers,cargo_capacity,
-        consumables,vehicle_class,pilots,films}=result
-    
-    let information=
-    `
+const printVehicles = (result) => {
+    let { name, model, manufacturer, cost_in_credits, length, max_atmosphering_speed, crew, passengers, cargo_capacity,
+        consumables, vehicle_class, pilots, films } = result
+
+    let information =
+        `
     ${name}
          
     Model: ${model}
@@ -363,10 +372,10 @@ const printVehicles=(result)=>{
     Atmospheric Speed is ${max_atmosphering_speed} and is ${length} meters long
     -------------------------
     Film Appearances:
-    ${films.length==0 ? `No Film Appearances` : `${films}`}
+    ${films.length == 0 ? `No Film Appearances` : `${films}`}
     -------------------------
     Famous Pilots:
-    ${pilots.length==0 ? `No Famous Pilots Have Used the ${name}` : `${pilots}`}
+    ${pilots.length == 0 ? `No Famous Pilots Have Used the ${name}` : `${pilots}`}
 
     `
     console.log(information)
