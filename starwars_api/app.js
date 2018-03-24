@@ -3,6 +3,7 @@
 
 const inquirer = require('inquirer'),
     url=require('calls'),
+    chalk=require('chalk'),
     catArray=['films','people','planets','species','starships','vehicles']
 
 const choicesList=(choiceArray,message,name)=>{
@@ -166,34 +167,34 @@ const printFilm=(result)=>{
     let {title,episode_id,opening_crawl,director,producer,release_date,characters,planets,starships,vehicles,species}=result
     let information=
 `
-Star Wars 
-Episode ${episode_id}
-${title}
+${chalk.bgBlue('Star Wars')}
+${chalk.bgBlue('Episode ' + episode_id)}
+${chalk.bgBlue(title)}
 
-Directed by: ${director}
-Produced by: ${producer}
+${chalk.cyan('Directed by:')} ${director}
+${chalk.cyan('Produced by:')} ${producer}
 
-Released: ${release_date}
+${chalk.cyan('Released:')} ${release_date}
 
 ------------------------
-Notable Characters:
+${chalk.bgWhite.black('Notable Characters:')}
 ${characters.length==0 ? `No Notable Characters` : `${characters}`}
 
 ------------------------
-Planets:
+${chalk.bgWhite.black('Planets:')}
 ${planets.length==0 ? `No Recorded Planets` :`${planets}` }
 
 ------------------------
-Ships and Vehicles:
+${chalk.bgWhite.black('Ships and Vehicles:')}
 ${starships.length==0 ? `No Notable Ships` :`${starships}` }
 ${vehicles.length==0 ? `No Notable Vehicles` : `${vehicles}`}
 
 -----------------------
-Species in the movie:
+${chalk.bgWhite.black('Species in the movie:')}
 ${species.length==0 ? `No Notable Species` : `${species}` }
 
 -----------------------
-Extras:
+${chalk.bgWhite.black('Extras:')}
 
 ${opening_crawl}
 

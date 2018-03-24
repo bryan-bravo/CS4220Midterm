@@ -21,8 +21,11 @@
   },
   "homepage": "https://github.com/bryan-bravo/CS4220Midterm#readme",
   "dependencies": {
+    "blessed": "^0.1.81",
+    "blessed-contrib": "^4.8.5",
+    "calls": "file:../calls",
+    "chalk": "^2.3.2",
     "inquirer": "^5.1.0",
-    "yargs": "^11.0.0",
-    "calls": "file:../calls"
+    "yargs": "^11.0.0"
   }
 }
