@@ -452,4 +452,4 @@ const printVehicles = (result) => {
 
 module.exports = {
     parse
-}
+}  
