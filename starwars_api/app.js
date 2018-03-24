@@ -2,213 +2,422 @@
 //Midterm
 
 const inquirer = require('inquirer'),
-    url=require('calls'),
-    catArray=['films','people','planets','species','starships','vehicles']
+    url = require('calls'),
+    categories = ['films', 'people', 'planets', 'species', 'starships', 'vehicles']
 
-const choicesList=(choiceArray,message,name)=>{
+const choicesList = (choiceArray, message, name) => {
     return inquirer.prompt([{
         type: 'list',
-        message:message,
-        name:name,
-        choices:choiceArray,
-        validate: (input) =>{
+        message: message,
+        name: name,
+        choices: choiceArray,
+        validate: (input) => {
             return true
         }
     }])
 }
 
-const choicesCheckbox=(choiceArray,message,name)=>{
+const choicesCheckbox = (choiceArray, message, name) => {
     return inquirer.prompt([{
         type: 'checkbox',
-        message:message,
-        name:name,
-        choices:choiceArray,
-        validate: (input) =>{
-            if(input.length<1)
+        message: message,
+        name: name,
+        choices: choiceArray,
+        validate: (input) => {
+            if (input.length < 1)
                 console.log('Please select at least one option')
             else
                 return true
         }
     }])
 }
-
+//get input from the cli, pass to search function
 const main = (id, term) => {
-    let selection='';
-    let value='';
-    
-    if(!id && term){
-        value=term
-        selection='term'
-        search(selection,value)
+
+    //term is search term
+    if (!id && term) {
+        search('term', term)
     }
-    else if(!term && id){
-        selection='id'
-        value=id
-        fetch(selection,value)
-    } else if(!term && !id) {
+    //id
+    else if (!term && id) {
+        fetch('id', id)
+        //neither
+    } else if (!term && !id) {
         inquirer.prompt([{
             type: 'input',
             name: 'search_term',
             message: 'Enter a term to search for.',
             validate: (input) => {
-                if(input.length<1) 
+                if (input.length < 1)
                     console.log('Please enter a term to search for. (Cannot be blank)')
                 else
                     return true
             }
         }]).then(answer => {
-            selection='term'
-            value=answer['search_term']
-            search(selection,value)
+            search('term', answer['search_term'])
         })
     }
-    
-    
-}
 
-const search=(selection,value)=>{
-    let results=[];
-    choicesList(catArray,'Select a field to search','Catagories').then(res=>{
-        url.info(selection,res.Catagories,value)
-            .then(result =>{
-                result.results.forEach(element=>{
-                    results.push(element)
-                })
-                if(results.length<1){
-                    console.log("No results were returned")
-                }
-                else{
-                    let nameList=[]
-                    let resultList=[]
-                
-                    results.forEach(element=>{
-                        if(res.Catagories=='films')
-                            nameList.push(element.title)    
-                        else
-                            nameList.push(element.name)
+
+}
+//only for term search
+const search = (selection, value) => {
+    let results = [];
+    //prompt the user what category they want to search
+    choicesList(categories, 'Select a field to search', 'Catagories')
+        .then(res => {
+            //makes the request
+            url.info(selection, res.Catagories, value)
+                .then(result => {
+                    result.results.forEach(element => {
+                        results.push(element)
                     })
-                    choicesCheckbox(nameList,'Select what to examine in detail','Selection')
-                        .then(result=>{
-                            if(res.Catagories=='films')
-                                resultList=reduceChoicesFilm(results,result.Selection)
+                    if (results.length < 1) {
+                        console.log("No results were returned")
+                    }
+                    //there are results
+                    else {
+                        let nameList = []
+                        let resultList = []
+
+                        results.forEach(element => {
+                            if (res.Catagories == 'films')
+                                nameList.push(element.title)
                             else
-                                resultList=reduceChoices(results,result.Selection)
-                            resultList.forEach(element=>{
-                                printSelection(res.Catagories,element)
-                            })    
+                                nameList.push(element.name)
                         })
-                }
-            })        
-    })
+                        choicesCheckbox(nameList, 'Select what to examine in detail', 'Selection')
+                            .then(result => {
+                                if (res.Catagories == 'films') {
+                                    resultList = reduceChoicesFilm(results, result.Selection)
+                                } else {
+                                    resultList = reduceChoices(results, result.Selection)
+                                }
+                                resultList.forEach(result => {
+                                    // parse(result, res.Catagories);
+                                    // console.log(result)
+                                    printSelection(res.Catagories, result)
+                                })
+                            })
+                    }
+                })
+        })
 }
 
-const fetch=(selection,value)=>{
-    choicesList(catArray,'Select a field to search','Catagories').then(res=>{
-        url.info(selection,res.Catagories,value)
-            .then(result =>{
-                if(result.detail=='Not found')
+const fetch = (selection, value) => {
+    choicesList(categories, 'Select a field to search', 'Catagories').then(res => {
+        url.info(selection, res.Catagories, value)
+            .then(result => {
+                if (result.detail == 'Not found')
                     console.log("No Results Were Found")
-                else{
-                    printSelection(res.Catagories,result)
+                else {
+                    parse(result, res.Catagories);
+                    // printSelection(res.Catagories,result)
                 }
-            })        
+            })
     })
 }
 
-const reduceChoices=(current,reduce)=>{
-    let reducedList=[]
-    reduce.forEach(element=>{
-        index=current.findIndex(remove=>{
-            return (element===remove.name)
+const reduceChoices = (current, reduce) => {
+    let reducedList = []
+    reduce.forEach(element => {
+        index = current.findIndex(remove => {
+            return (element === remove.name)
         })
-        if(index!=-1){
+        if (index != -1) {
             reducedList.push(current[index])
         }
     })
     return reducedList
 }
 
-const reduceChoicesFilm=(current,reduce)=>{
-    let reducedList=[]
-    reduce.forEach(element=>{
-        index=current.findIndex(remove=>{
-            return (element===remove.title)
+const reduceChoicesFilm = (current, reduce) => {
+    let reducedList = []
+    reduce.forEach(element => {
+        index = current.findIndex(remove => {
+            return (element === remove.title)
         })
-        if(index!=-1){
+        if (index != -1) {
             reducedList.push(current[index])
         }
     })
     return reducedList
 }
-const printSelection = (catagory,result) => {
-    switch(catagory){
-    case 'films':
-        printFilm(result)
-        break
-    case 'people':
-        printPeople(result)
-        break
-    case 'planets':
-        printPlanets(result)
-        break
-    case 'species':
-        printSpecies(result)
-        break
-    case 'starships':
-        printStarships(result)
-        break
-    case 'vehicles':
-        printVehicles(result)
-        break
-    default:
-        console.log('Something went wrong with the request')
+const printSelection = (catagory, result) => {
+    switch (catagory) {
+        case 'films':
+            printFilm(result)
+            break
+        case 'people':
+            printPeople(result)
+            break
+        case 'planets':
+            printPlanets(result)
+            break
+        case 'species':
+            printSpecies(result)
+            break
+        case 'starships':
+            printStarships(result)
+            break
+        case 'vehicles':
+            printVehicles(result)
+            break
+        default:
+            console.log('Something went wrong with the request')
     }
 }
 
-const printFilm=(result)=>{
-    let {title,episode_id,opening_crawl,director,producer,release_date,characters,planets,starships,vehicles,species}=result
-    let information=
-`
-Star Wars 
-Episode ${episode_id}
-${title}
+const printFilm = (result) => {
+    let {
+        title,
+        episode_id,
+        opening_crawl,
+        director,
+        producer,
+        release_date,
+        characters,
+        planets,
+        starships,
+        vehicles,
+        species
+    } = result
+    let information =
+        `
+    Star Wars 
+    Episode ${episode_id}
+    ${title}
 
-Directed by: ${director}
-Produced by: ${producer}
+    Directed by: ${director}
+    Produced by: ${producer}
 
-Released: ${release_date}
+    Released: ${release_date}
 
-------------------------
-Notable Characters:
-${characters.length==0 ? `No Notable Characters` : `${characters}`}
+    ------------------------
+    Notable Characters:
+    ${characters.length==0 ? `No Notable Characters` : `${characters}`}
 
-------------------------
-Planets:
-${planets.length==0 ? `No Recorded Planets` :`${planets}` }
+    ------------------------
+    Planets:
+    ${planets.length==0 ? `No Recorded Planets` :`${planets}` }
 
-------------------------
-Ships and Vehicles:
-${starships.length==0 ? `No Notable Ships` :`${starships}` }
-${vehicles.length==0 ? `No Notable Vehicles` : `${vehicles}`}
+    ------------------------
+    Ships and Vehicles:
+    ${starships.length==0 ? `No Notable Ships` :`${starships}` }
+    ${vehicles.length==0 ? `No Notable Vehicles` : `${vehicles}`}
 
------------------------
-Species in the movie:
-${species.length==0 ? `No Notable Species` : `${species}` }
+    -----------------------
+    Species in the movie:
+    ${species.length==0 ? `No Notable Species` : `${species}` }
 
------------------------
-Extras:
+    -----------------------
+    Extras:
 
-${opening_crawl}
+    ${opening_crawl}
 
 
-`
+    `
     console.log(information)
 }
+const parse = (result, category) => {
+    if (category == 'films') {
+        let grossArrayOfPromiseArrays = [];
+        let peopleReqs = [],
+            vehicleReqs = [],
+            starShipsReqs = [],
+            speciesReqs = [],
+            planetsReqs = [];
+        result.characters.forEach(characterUrl => {peopleReqs.push(url.link(characterUrl))});
+        result.vehicles.forEach(vehicleUrl => vehicleReqs.push(url.link(vehicleUrl)));
+        result.starships.forEach(starShipUrl => starShipsReqs.push(url.link(starShipUrl)));
+        result.species.forEach(speciesUrl => speciesReqs.push(url.link(speciesUrl)));
+        result.planets.forEach(planetUrl => planetsReqs.push(url.link(planetUrl)));
 
-const printPeople=(result)=>{
-    let {name,height,mass,hair_color,skin_color,eye_color,birth_year,gender,homeworld,films,species,vehicles,starships}=result
-    let information=
-    `
+        grossArrayOfPromiseArrays.push(peopleReqs, vehicleReqs, starShipsReqs, speciesReqs, planetsReqs );
+
+        const promiseForAll = Promise.all(
+            grossArrayOfPromiseArrays.map(function (innerPromiseArray) {
+                return Promise.all(innerPromiseArray);
+            })
+        );
+        promiseForAll.then(results => {
+            results.forEach(arrayOfCategory => {
+                arrayOfCategory.forEach(itemInCategory => {
+                    if (itemInCategory.url.includes('people')) {
+                        result.characters.pop();
+                        result.characters.unshift(itemInCategory.name)
+                    } else if (itemInCategory.url.includes('vehicles')) {
+                        result.vehicles.pop();
+                        result.vehicles.unshift(itemInCategory.name)
+                    } else if (itemInCategory.url.includes('starships')) {
+                        result.starships.pop();
+                        result.starships.unshift(itemInCategory.name)
+                    } else if (itemInCategory.url.includes('species')) {
+                        result.species.pop();
+                        result.species.unshift(itemInCategory.name)
+                    } else if (itemInCategory.url.includes('planets')) {
+                        result.planets.pop();
+                        result.planets.unshift(itemInCategory.name)
+                    }
+                });
+            });
+            printFilm(result)
+        });
+    } else if (category == 'people') {
+        let grossArrayOfPromiseArrays = [];
+        let filmReqs = [],
+            vehicleReqs = [],
+            starShipsReqs = [],
+            speciesReqs = [],
+            homeWorldReqs = [];
+        result.films.forEach(filmUrl => filmReqs.push(url.link(filmUrl)));
+        result.vehicles.forEach(vehicleUrl => vehicleReqs.push(url.link(vehicleUrl)));
+        result.starships.forEach(starShipUrl => starShipsReqs.push(url.link(starShipUrl)));
+        result.species.forEach(speciesUrl => speciesReqs.push(url.link(speciesUrl)));
+        homeWorldReqs.push(url.link(result.homeworld));
+
+        grossArrayOfPromiseArrays.push(filmReqs, vehicleReqs, starShipsReqs, speciesReqs, homeWorldReqs);
+
+        const promiseForAll = Promise.all(
+            grossArrayOfPromiseArrays.map(function (innerPromiseArray) {
+                return Promise.all(innerPromiseArray);
+            })
+        );
+        promiseForAll.then(results => {
+            results.forEach(arrayOfCategory => {
+                arrayOfCategory.forEach(itemInCategory => {
+                    if (itemInCategory.url.includes('films')) {
+                        result.films.pop();
+                        result.films.unshift(itemInCategory.title)
+                    } else if (itemInCategory.url.includes('vehicles')) {
+                        result.vehicles.pop();
+                        result.vehicles.unshift(itemInCategory.name)
+                    } else if (itemInCategory.url.includes('starships')) {
+                        result.starships.pop();
+                        result.starships.unshift(itemInCategory.name)
+                    } else if (itemInCategory.url.includes('species')) {
+                        result.species.pop();
+                        result.species.unshift(itemInCategory.name)
+                    } else if (itemInCategory.url.includes('planets')) {
+                        result.homeworld = itemInCategory.name;
+                    }
+                });
+            });
+            printPeople(result)
+        });
+    } else if (category == 'planets') {
+        let grossArrayOfPromiseArrays = [];
+        let filmReqs = [],
+            peopleReqs = [];
+        result.films.forEach(filmUrl => filmReqs.push(url.link(filmUrl)));
+        result.residents.forEach(peopleUrl => peopleReqs.push(url.link(peopleUrl)));
+
+        grossArrayOfPromiseArrays.push(filmReqs, peopleReqs);
+
+        const promiseForAll = Promise.all(
+            grossArrayOfPromiseArrays.map(function (innerPromiseArray) {
+                return Promise.all(innerPromiseArray);
+            })
+        );
+        promiseForAll.then(results => {
+            results.forEach(arrayOfCategory => {
+                arrayOfCategory.forEach(itemInCategory => {
+                    if (itemInCategory.url.includes('films')) {
+                        result.films.pop();
+                        result.films.unshift(itemInCategory.title)
+                    } else if (itemInCategory.url.includes('people')) {
+                        result.residents.pop();
+                        result.residents.unshift(itemInCategory.name)
+                    }
+                });
+            });
+            printPlanets(result)
+        });
+    } else if (category == 'species') {
+        let grossArrayOfPromiseArrays = [];
+        let filmReqs = [],
+            peopleReqs = [],
+            homeWorldReqs = [];
+        result.films.forEach(filmUrl => filmReqs.push(url.link(filmUrl)));
+        result.people.forEach(peopleUrl => peopleReqs.push(url.link(peopleUrl)));
+        homeWorldReqs.push(url.link(result.homeworld));
+
+        grossArrayOfPromiseArrays.push(filmReqs, peopleReqs, homeWorldReqs);
+
+        const promiseForAll = Promise.all(
+            grossArrayOfPromiseArrays.map(function (innerPromiseArray) {
+                return Promise.all(innerPromiseArray);
+            })
+        );
+        promiseForAll.then(results => {
+            results.forEach(arrayOfCategory => {
+                arrayOfCategory.forEach(itemInCategory => {
+                    if (itemInCategory.url.includes('films')) {
+                        result.films.pop();
+                        result.films.unshift(itemInCategory.title)
+                    } else if (itemInCategory.url.includes('people')) {
+                        result.people.pop();
+                        result.people.unshift(itemInCategory.name)
+                    } else if (itemInCategory.url.includes('planets')) {
+                        result.homeworld = itemInCategory.name;
+                    }
+                });
+            });
+            printSpecies(result)
+        });
+    } else if (category == 'vehicles' || category == 'starships') {
+        let grossArrayOfPromiseArrays = [];
+        let filmReqs = [],
+            peopleReqs = [];
+        result.films.forEach(filmUrl => filmReqs.push(url.link(filmUrl)));
+        result.pilots.forEach(peopleUrl => peopleReqs.push(url.link(peopleUrl)));
+
+        grossArrayOfPromiseArrays.push(filmReqs, peopleReqs);
+
+        const promiseForAll = Promise.all(
+            grossArrayOfPromiseArrays.map(function (innerPromiseArray) {
+                return Promise.all(innerPromiseArray);
+            })
+        );
+        promiseForAll.then(results => {
+            results.forEach(arrayOfCategory => {
+                arrayOfCategory.forEach(itemInCategory => {
+                    if (itemInCategory.url.includes('films')) {
+                        result.films.pop();
+                        result.films.unshift(itemInCategory.title);
+                    } else if (itemInCategory.url.includes('people')) {
+                        result.pilots.pop();
+                        result.pilots.unshift(itemInCategory.name);
+                    }
+                });
+            });
+            if (category == 'vehicles')
+                printVehicles(result);
+            else
+                printStarships(result);
+        });
+    } else {}
+}
+
+const printPeople = (result) => {
+    let {
+        name,
+        height,
+        mass,
+        hair_color,
+        skin_color,
+        eye_color,
+        birth_year,
+        gender,
+        homeworld,
+        films,
+        species,
+        vehicles,
+        starships
+    } = result
+
+    let information =
+        `
     ${name}
     ------------
     Height:  ${hair_color.length < 8 ? `${height} cm` : `${height} cm\t`}\tWeight: ${mass} kg\tGender: ${gender}
@@ -220,20 +429,32 @@ const printPeople=(result)=>{
     ---------------------------------------------------------------
     Vehicles Used:
     ${starships.length==0 ? `No Notable Ships` :`${starships}` }
+    
     ${vehicles.length==0 ? `No Notable Vehicles` : `${vehicles}`}
     ---------------------------------------------------------------
     Film Appearances:
     ${films.length==0 ? `No Film Appearances` : `${films}`}
-
     `
     console.log(information)
 }
 
-const printPlanets=(result)=>{
-    let {name,rotation_period,orbital_period,diameter,climate,gravity,terrain,surface_water,population,residents,films}=result
+const printPlanets = (result) => {
+    let {
+        name,
+        rotation_period,
+        orbital_period,
+        diameter,
+        climate,
+        gravity,
+        terrain,
+        surface_water,
+        population,
+        residents,
+        films
+    } = result
 
-    let information=
-    `
+    let information =
+        `
     ${name}
     ----------------------------------------------
     Characteristics:
@@ -260,11 +481,24 @@ const printPlanets=(result)=>{
     console.log(information)
 }
 
-const printSpecies=(result)=>{
-    let {name,classification,designation,average_height,skin_colors,hair_colors,eye_colors,average_lifespan,homeworld,language,people,films}=result
-    
-    let information=
-    `
+const printSpecies = (result) => {
+    let {
+        name,
+        classification,
+        designation,
+        average_height,
+        skin_colors,
+        hair_colors,
+        eye_colors,
+        average_lifespan,
+        homeworld,
+        language,
+        people,
+        films
+    } = result
+
+    let information =
+        `
     ${name}
     ----------------------------
     Statistics
@@ -299,11 +533,26 @@ const printSpecies=(result)=>{
     console.log(information)
 }
 
-const printStarships=(result)=>{
-    let {name,model,manufacturer,cost_in_credits,length,max_atmosphering_speed,crew,passengers,cargo_capacity,
-        consumables,hyperdrive_rating,MGLT,starship_class,pilots,films}=result
-    
-    let information=
+const printStarships = (result) => {
+    let {
+        name,
+        model,
+        manufacturer,
+        cost_in_credits,
+        length,
+        max_atmosphering_speed,
+        crew,
+        passengers,
+        cargo_capacity,
+        consumables,
+        hyperdrive_rating,
+        MGLT,
+        starship_class,
+        pilots,
+        films
+    } = result
+
+    let information =
         `
         ${name}
          
@@ -328,12 +577,25 @@ const printStarships=(result)=>{
     console.log(information)
 }
 
-const printVehicles=(result)=>{
-    let {name,model,manufacturer,cost_in_credits,length,max_atmosphering_speed,crew,passengers,cargo_capacity,
-        consumables,vehicle_class,pilots,films}=result
-    
-    let information=
-    `
+const printVehicles = (result) => {
+    let {
+        name,
+        model,
+        manufacturer,
+        cost_in_credits,
+        length,
+        max_atmosphering_speed,
+        crew,
+        passengers,
+        cargo_capacity,
+        consumables,
+        vehicle_class,
+        pilots,
+        films
+    } = result
+
+    let information =
+        `
     ${name}
          
     Model: ${model}

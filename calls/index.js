@@ -23,7 +23,3 @@ exports.link = (apiURL)=>{
     .then(response=>response.body)
     .catch(error=>error.response.body)
 }
-
-
-
-
