@@ -3,9 +3,13 @@ const
     url=require('./config.json').url
 
 const _fetch = (command) => {
-    return superagent.get(`${url}/${command}`)
-        .then(response => response.body)
-        .catch(error => error.response.body)
+    return _fetchURL(`${url}/${command}`)
+}
+
+const _fetchURL = (fullUrl) => {
+    return superagent.get(`${fullUrl}`)
+    .then(response => response.body)
+    .catch(error => error.response.body)
 }
 
 exports.search = (category,term) => {
@@ -14,6 +18,10 @@ exports.search = (category,term) => {
 
 exports.fetch = (category,id) => {
     return _fetch(`${category}/${id}`)
+}
+
+exports.fetchURL = (url) => {
+    return _fetchURL(url)
 }
 
 exports.link = (apiURL)=>{

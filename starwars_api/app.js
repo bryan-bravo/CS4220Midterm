@@ -4,7 +4,9 @@
 const inquirer = require('inquirer'),
     url=require('calls'),
     chalk=require('chalk'),
+    ora = require('ora'),
     catArray=['films','people','planets','species','starships','vehicles']
+    
 
 const choicesList=(choiceArray,message,name)=>{
     return inquirer.prompt([{
@@ -165,42 +167,59 @@ const printSelection = (catagory,result) => {
 
 const printFilm=(result)=>{
     let {title,episode_id,opening_crawl,director,producer,release_date,characters,planets,starships,vehicles,species}=result
-    let information=
-`
-${chalk.bgBlue('Star Wars')}
-${chalk.bgBlue('Episode ' + episode_id)}
-${chalk.bgBlue(title)}
+    characters = characters.map((charURL) => {
+        return url.fetchURL(charURL)
+    })
+    planets = planets.map((planetURL) => {
+        return url.fetchURL(planetURL)
+    })
 
-${chalk.cyan('Directed by:')} ${director}
-${chalk.cyan('Produced by:')} ${producer}
+    const promiseArray = [characters, planets]
 
-${chalk.cyan('Released:')} ${release_date}
+    const spinner = ora('Fetching detailed information...').start();
+    Promise.all(promiseArray.map(Promise.all, Promise)).then(([characters, planets]) => {
+        spinner.stop()
 
-------------------------
-${chalk.bgWhite.black('Notable Characters:')}
-${characters.length==0 ? `No Notable Characters` : `${characters}`}
+        let information=
+        `
+        ${chalk.bgBlue('Star Wars')}
+        ${chalk.bgBlue('Episode ' + episode_id)}
+        ${chalk.bgBlue(title)}
+        
+        ${chalk.cyan('Directed by:')} ${director}
+        ${chalk.cyan('Produced by:')} ${producer}
+        
+        ${chalk.cyan('Released:')} ${release_date}
+        
+        ------------------------
+        ${chalk.bgWhite.black('Notable Characters:')}
+${characters.length==0 ? `No Notable Characters` : `${characters.map((character) => { return '        ' + character.name }).join('\r\n')}`}
+        
+        ------------------------
+        ${chalk.bgWhite.black('Planets:')}
+${planets.length==0 ? `No Recorded Planets` : `${planets.map((planet) => { return '        ' + planet.name }).join('\r\n')}`}
+        
+        ------------------------
+        ${chalk.bgWhite.black('Ships and Vehicles:')}
+        ${starships.length==0 ? `No Notable Ships` :`${starships}` }
+        ${vehicles.length==0 ? `No Notable Vehicles` : `${vehicles}`}
+        
+        -----------------------
+        ${chalk.bgWhite.black('Species in the movie:')}
+        ${species.length==0 ? `No Notable Species` : `${species}` }
+        
+        -----------------------
+        ${chalk.bgWhite.black('Extras:')}
+        
+        ${opening_crawl}
+        
+        
+        `
+            console.log(information)
+    })
 
-------------------------
-${chalk.bgWhite.black('Planets:')}
-${planets.length==0 ? `No Recorded Planets` :`${planets}` }
-
-------------------------
-${chalk.bgWhite.black('Ships and Vehicles:')}
-${starships.length==0 ? `No Notable Ships` :`${starships}` }
-${vehicles.length==0 ? `No Notable Vehicles` : `${vehicles}`}
-
------------------------
-${chalk.bgWhite.black('Species in the movie:')}
-${species.length==0 ? `No Notable Species` : `${species}` }
-
------------------------
-${chalk.bgWhite.black('Extras:')}
-
-${opening_crawl}
 
 
-`
-    console.log(information)
 }
 
 const printPeople=(result)=>{
