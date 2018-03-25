@@ -76,8 +76,7 @@ const search = (query) => {
                 })
                 if (results.length < 1) {
                     console.log("No results were returned")
-                }
-                else {
+                } else {
                     let nameList = []
                     let resultList = []
 
@@ -217,7 +216,7 @@ const printFilm = (result) => {
         ${species.length == 0 ? `No Notable Species` : `${species.map((species) => { return `\r\n\t` + species.name }).join('')}`}
         
         -----------------------
-        ${chalk.bgWhite.black('Extras:')}
+        ${chalk.bgWhite.black('Opening Crawl:')}
         
         ${opening_crawl}
         
@@ -319,51 +318,87 @@ const printPlanets = (result) => {
     })
 }
 
-const printSpecies = (result) => {
-    let { name, classification, designation, average_height, skin_colors, hair_colors, eye_colors, average_lifespan, homeworld, language, people, films } = result
+const printSpecies=(result)=>{
 
-    let information =
-        `
-    ${name}
-    ----------------------------
-    Statistics
+    let {name,classification,designation,average_height,skin_colors,hair_colors,eye_colors,average_lifespan,homeworld,language,people,films}=result
+    // homeworld = homeworld.map((homeURL) => {
+    //     return url.fetchURL(homeURL)
+    // })
+    people = people.map((peopleURL) => {
+        return url.fetchURL(peopleURL)
+    })
+    films = films.map((filmURL) => {
+        return url.fetchURL(filmURL)
+    })
 
-    Avg. Height:   ${average_height}
-    Avg. LifeSpan: ${average_lifespan}
-    ----------------------------
-    Colorings
-
-    Skin Colors: ${skin_colors}
-    Hair Colors: ${hair_colors}
-    Eye  Colors: ${eye_colors}
-    ----------------------------
-    World
-
-    Home World: ${homeworld}
-    Language: ${language}
-    ----------------------------
-    Taxonomy
     
-    Designation: ${designation}
-    Classification: ${classification}
-    ----------------------------------------------
-    Notable Characters:
+    homeworldPr = []
+    homeworldPr.push(url.link(homeworld))
 
-    ${people.length == 0 ? `No Notable Characters are ${name}` : `${people}`}
-    -------------------------
-    Film Appearances:
+    const promiseArray = [homeworldPr,people, films]
 
-    ${films.length == 0 ? `No Film Appearances` : `${films}`}
-    `
+    
+
+    const spinner = ora('Fetching detailed information...').start();
+        Promise.all(promiseArray.map(Promise.all, Promise)).then(([homeworld, people, films]) => {
+                    spinner.stop()
+
+        let information=
+        `
+        ${name}
+        ----------------------------
+        ${chalk.bgWhite.black('Statistics:')}
+
+        Avg. Height:   ${average_height}
+        Avg. LifeSpan: ${average_lifespan}
+        ----------------------------
+        ${chalk.bgWhite.black('Colorings:')}
+
+        Skin Colors: ${skin_colors}
+        Hair Colors: ${hair_colors}
+        Eye  Colors: ${eye_colors}
+        ----------------------------
+        ${chalk.bgWhite.black('World:')}
+        ${homeworld.map(planet => {return '' +planet.name}).join('')}
+        Language: ${language}
+        ----------------------------
+        ${chalk.bgWhite.black('Taxonomy:')}
+    
+        Designation: ${designation}
+        Classification: ${classification}
+        ----------------------------------------------
+        ${chalk.bgWhite.black('Notable Characters:')}
+
+${people.length==0 ? `No Notable Characters` : `${people.map((person) => { return '        ' + person.name }).join('\r\n')}`}
+        -------------------------
+        ${chalk.bgWhite.black('Film Appearances:')}
+
+${films.length==0 ? `No Film Appearances` : `${films.map((movie) => { return '        ' + movie.title }).join('\r\n')}`}
+        `
     console.log(information)
+        })
 }
 
-const printStarships = (result) => {
-    let { name, model, manufacturer, cost_in_credits, length, max_atmosphering_speed, crew, passengers, cargo_capacity,
-        consumables, hyperdrive_rating, MGLT, starship_class, pilots, films } = result
+const printStarships=(result)=>{
+    let {name,model,manufacturer,cost_in_credits,length,max_atmosphering_speed,crew,passengers,cargo_capacity,
+        consumables,hyperdrive_rating,MGLT,starship_class,pilots,films}=result
+    
+    films = films.map((filmURL) => {
+            return url.fetchURL(filmURL)
+   })
 
-    let information =
-        `
+   pilots = pilots.map((pilotURL) => {
+        return url.fetchURL(pilotURL)
+    })
+    
+    const promiseArray = [films,pilots]
+    
+    const spinner = ora('Fetching detailed information...').start();
+    Promise.all(promiseArray.map(Promise.all, Promise)).then(([films,pilots]) => {
+                     spinner.stop()
+
+        let information=
+            `
         ${name}
          
         Model: ${model}
@@ -371,47 +406,64 @@ const printStarships = (result) => {
         Price: ${cost_in_credits} Credits
         Starship Class: ${starship_class}
         -------------------------
-        Specifications:
+        ${chalk.bgWhite.black('Specifications:')}
         It can support a crew of ${crew} and can carry ${passengers} passengers
         Atmospheric Speed is ${max_atmosphering_speed} and is ${length} meters long
         Hyperdrive Rating: ${hyperdrive_rating}
         MegaLight Speed: ${MGLT}
         -------------------------
-        Film Appearances:
-        ${films.length == 0 ? `No Film Appearances` : `${films}`}
+        ${chalk.bgWhite.black('Film Appearances:')}
+${films.length==0 ? `No Film Appearances` : `${films.map((movie) => { return '        ' + movie.title }).join('\r\n')}`}
         -------------------------
-        Famous Pilots:
-        ${pilots.length == 0 ? `No famous pilots have used  the ${name}` : `${pilots}`}
+        ${chalk.bgWhite.black('Famous Pilots:')}
+        ${pilots.length==0 ? `No famous pilots have used the ${name}` : `${pilots.map((pilot) => { return '        ' + pilot.name }).join('\r\n')}`}
     
         `
     console.log(information)
+    })
 }
 
-const printVehicles = (result) => {
-    let { name, model, manufacturer, cost_in_credits, length, max_atmosphering_speed, crew, passengers, cargo_capacity,
-        consumables, vehicle_class, pilots, films } = result
+const printVehicles=(result)=>{
+    let {name,model,manufacturer,cost_in_credits,length,max_atmosphering_speed,crew,passengers,cargo_capacity,
+        consumables,vehicle_class,pilots,films}=result
 
-    let information =
+    films = films.map((filmURL) => {
+            return url.fetchURL(filmURL)
+   })
+
+   pilots = pilots.map((pilotURL) => {
+    return url.fetchURL(pilotURL)
+    })
+    
+    const promiseArray = [films, pilots]
+    
+    const spinner = ora('Fetching detailed information...').start();
+    Promise.all(promiseArray.map(Promise.all, Promise)).then(([films, pilots]) => {
+                     spinner.stop()
+    
+        let information=
         `
-    ${name}
+        ${name}
          
-    Model: ${model}
-    Manufacturer: ${manufacturer}
-    Price: ${cost_in_credits} Credits
-    Vehicle Class: ${vehicle_class}
-    -------------------------
-    Specifications:
-    It can support a crew of ${crew} and can carry ${passengers} passengers
-    Atmospheric Speed is ${max_atmosphering_speed} and is ${length} meters long
-    -------------------------
-    Film Appearances:
-    ${films.length == 0 ? `No Film Appearances` : `${films}`}
-    -------------------------
-    Famous Pilots:
-    ${pilots.length == 0 ? `No Famous Pilots Have Used the ${name}` : `${pilots}`}
+        Model: ${model}
+        Manufacturer: ${manufacturer}
+        Price: ${cost_in_credits} Credits
+        Vehicle Class: ${vehicle_class}
+        -------------------------
+        ${chalk.bgWhite.black('Specifications:')}
+        It can support a crew of ${crew} and can carry ${passengers} passengers
+        Atmospheric Speed is ${max_atmosphering_speed} and is ${length} meters long
+        -------------------------
+        Film Appearances:
+        ${chalk.bgWhite.black('Film Appreances:')}
+${films.length==0 ? `No Film Appearances` : `${films.map((movie) => { return '        ' + movie.title }).join('\r\n')}`}
+        -------------------------
+        ${chalk.bgWhite.black('Famous Pilots:')}
+${pilots.length==0 ? `No famous pilots have used the ${name}` : `${pilots.map((pilot) => { return '        ' + pilot.name }).join('\r\n')}`}
 
-    `
+        `
     console.log(information)
+    })
 }
 
 module.exports = {
