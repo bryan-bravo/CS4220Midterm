@@ -24,12 +24,5 @@ exports.fetchURL = (url) => {
     return _fetchURL(url)
 }
 
-exports.link = (apiURL)=>{
-    return superagent.get(`${apiURL}`)
-    .then(response=>response.body)
-    .catch(error=>error.response.body)
-}
-
-
 
 
