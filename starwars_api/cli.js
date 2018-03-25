@@ -1,3 +1,7 @@
+// Patrick Flinner, Bryan Bravo, Gevorg Khachatrian, Kevin Lam
+// CS4220
+// Midterm
+
 const
     app = require('./app'),
     yargs = require('yargs')

@@ -1,3 +1,7 @@
+// Patrick Flinner, Bryan Bravo, Gevorg Khachatrian, Kevin Lam
+// CS4220
+// Midterm
+
 const 
     superagent = require('superagent'),
     url=require('./config.json').url

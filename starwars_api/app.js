@@ -1,5 +1,6 @@
-//Patrick Flinner, Bryan Bravo, Gevorg K., Kevin Lam
-//Midterm
+// Patrick Flinner, Bryan Bravo, Gevorg Khachatrian, Kevin Lam
+// CS4220
+// Midterm
 
 const inquirer = require('inquirer'),
     url = require('calls'),
