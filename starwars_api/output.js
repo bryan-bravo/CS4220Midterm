@@ -157,7 +157,7 @@ const printPlanets = (result) => {
         spinner.stop();
         let information = outdent
             `
-    ${name}
+    ${chalk.bgBlue(name)}
     ----------------------------------------------
     Characteristics:
     Day Length: ${rotation_period} Earth Hours
@@ -208,7 +208,7 @@ const printSpecies = (result) => {
 
         let information = outdent
             `
-        ${name}
+        ${chalk.bgBlue(name)}
         ----------------------------
         ${chalk.bgWhite.black('Statistics:')}
         Avg. Height:   ${average_height}
@@ -262,7 +262,7 @@ const printStarships = (result) => {
 
         let information = outdent
             `
-        ${name}
+        ${chalk.bgBlue(name)}
          
         Model: ${model}
         Manufacturer: ${manufacturer}
@@ -309,7 +309,7 @@ const printVehicles = (result) => {
 
         let information = outdent
             `
-        ${name}
+        ${chalk.bgBlue(name)}
          
         Model: ${model}
         Manufacturer: ${manufacturer}
