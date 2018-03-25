@@ -5,8 +5,9 @@ const inquirer = require('inquirer'),
     url = require('calls'),
     chalk = require('chalk'),
     ora = require('ora'),
-    output = require('./output')
-    catArray = ['films', 'people', 'planets', 'species', 'starships', 'vehicles']
+    output = require('./output'),
+    categoryURL = 'https://swapi.co/api/'
+    //catArray = ['films', 'people', 'planets', 'species', 'starships', 'vehicles']
 
 
 const choicesList = (choiceArray, message, name) => {
@@ -68,50 +69,58 @@ const main = (type, query) => {
 }
 
 const search = (query) => {
-    let results = [];
-    choicesList(catArray, 'Select a field to search', 'Catagories').then(res => {
-        url.search(res.Catagories, query)
-            .then(result => {
-                result.results.forEach(element => {
-                    results.push(element)
-                })
-                if (results.length < 1) {
-                    console.log("No results were returned")
-                } else {
-                    let nameList = []
-                    let resultList = []
+    url.fetchURL(categoryURL).then(result => {
+        let catArray = Object.keys(result)
 
-                    results.forEach(element => {
-                        if (res.Catagories == 'films')
-                            nameList.push(element.title)
-                        else
-                            nameList.push(element.name)
+        let results = [];
+        choicesList(catArray, 'Select a field to search', 'Catagories').then(res => {
+            url.search(res.Catagories, query)
+                .then(result => {
+                    result.results.forEach(element => {
+                        results.push(element)
                     })
-                    choicesCheckbox(nameList, 'Select what to examine in detail', 'Selection')
-                        .then(result => {
+                    if (results.length < 1) {
+                        console.log("No results were returned")
+                    } else {
+                        let nameList = []
+                        let resultList = []
+
+                        results.forEach(element => {
                             if (res.Catagories == 'films')
-                                resultList = reduceChoicesFilm(results, result.Selection)
+                                nameList.push(element.title)
                             else
-                                resultList = reduceChoices(results, result.Selection)
-                            resultList.forEach(element => {
-                                output.printSelection(res.Catagories, element)
-                            })
+                                nameList.push(element.name)
                         })
-                }
-            })
+                        choicesCheckbox(nameList, 'Select what to examine in detail', 'Selection')
+                            .then(result => {
+                                if (res.Catagories == 'films')
+                                    resultList = reduceChoicesFilm(results, result.Selection)
+                                else
+                                    resultList = reduceChoices(results, result.Selection)
+                                resultList.forEach(element => {
+                                    output.printSelection(res.Catagories, element)
+                                })
+                            })
+                    }
+                })
+        })
     })
 }
 
 const fetch = (id) => {
-    choicesList(catArray, 'Select a field to search', 'Catagories').then(res => {
-        url.fetch(res.Catagories, id)
-            .then(result => {
-                if (result.detail == 'Not found')
-                    console.log("No Results Were Found")
-                else {
-                    output.printSelection(res.Catagories, result)
-                }
-            })
+    url.fetchURL(categoryURL).then(result => {
+        let catArray = Object.keys(result)
+
+        choicesList(catArray, 'Select a field to search', 'Catagories').then(res => {
+            url.fetch(res.Catagories, id)
+                .then(result => {
+                    if (result.detail == 'Not found')
+                        console.log("No Results Were Found")
+                    else {
+                        output.printSelection(res.Catagories, result)
+                    }
+                })
+        })
     })
 }
 
