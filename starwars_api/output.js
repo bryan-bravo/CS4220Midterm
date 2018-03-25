@@ -61,7 +61,6 @@ const printFilm = (result) => {
         
         ${chalk.cyan('Directed by:')} ${director}
         ${chalk.cyan('Produced by:')} ${producer}
-        
         ${chalk.cyan('Released:')} ${release_date}
         
         ------------------------
@@ -83,9 +82,7 @@ const printFilm = (result) => {
         
         -----------------------
         ${chalk.bgWhite.black('Opening Crawl:')}
-        
         ${opening_crawl}
-        
         
         `
         console.log(indentString(information, 8))
@@ -123,7 +120,7 @@ const printPeople = (result) => {
             `
         ${chalk.bgBlue(name)}
         ------------
-        ${chalk.cyan('Height:')}  ${hair_color.length < 8 ? `${height} cm` : `${height} cm\t`}\tWeight: ${mass} kg\tGender: ${gender}
+        ${chalk.cyan('Height:')}  ${hair_color.length < 8 ? `${height} cm` : `${height} cm\t`}\t${chalk.cyan('Weight:')} ${mass} kg\t${chalk.cyan('Gender:')} ${gender}
         ${chalk.cyan('Hair:')} ${hair_color}\t${chalk.cyan('Eye:')} ${eye_color}\t${chalk.cyan('Skin:')} ${skin_color}
         ${chalk.cyan('Born:')} ${birth_year}
         ${chalk.cyan('Species:')} ${species.map(species => { return species.name }).join(', ')}
@@ -133,6 +130,7 @@ const printPeople = (result) => {
         ${chalk.bgWhite.black('Vehicles Used:')}
         ${starships.length == 0 ? `No Notable Ships` : `${starships.map((starship) => { return starship.name }).join('\r\n')}`}
         ${vehicles.length == 0 ? `No Notable Vehicles` : `${vehicles.map((vehicle) => { return vehicle.name }).join('\r\n')}`}
+        
         ---------------------------------------------------------------
         ${chalk.bgWhite.black('Film Appearances:')}
         ${films.length == 0 ? `No Film Appearances` : `${films.map((film) => { return film.title }).join('\r\n')}`}
@@ -162,7 +160,6 @@ const printPlanets = (result) => {
     ${name}
     ----------------------------------------------
     Characteristics:
-
     Day Length: ${rotation_period} Earth Hours
     Year Length:${orbital_period} Earth Days
     Climate: ${climate} 
@@ -173,12 +170,10 @@ const printPlanets = (result) => {
 
     ----------------------------------------------
     Notable Residents:
-
     ${residents.length == 0 ? `No Notable Residents Reside on ${name}` : `${residents.map((character) => { return character.name }).join('\r\n')}`}
 
     ----------------------------------------------
     Film Appearances:
-    
     ${films.length == 0 ? `No Film Appearances` : `${films.map((film) => { return film.title }).join('\r\n')}`}
 
     `
@@ -216,31 +211,31 @@ const printSpecies = (result) => {
         ${name}
         ----------------------------
         ${chalk.bgWhite.black('Statistics:')}
-
         Avg. Height:   ${average_height}
         Avg. LifeSpan: ${average_lifespan}
+
         ----------------------------
         ${chalk.bgWhite.black('Colorings:')}
-
         Skin Colors: ${skin_colors}
         Hair Colors: ${hair_colors}
         Eye  Colors: ${eye_colors}
+
         ----------------------------
         ${chalk.bgWhite.black('World:')}
         ${homeworld.map(planet => { return planet.name }).join(', ')}
         Language: ${language}
+
         ----------------------------
         ${chalk.bgWhite.black('Taxonomy:')}
-    
         Designation: ${designation}
         Classification: ${classification}
+
         ----------------------------------------------
         ${chalk.bgWhite.black('Notable Characters:')}
-
         ${people.length == 0 ? `No Notable Characters` : `${people.map((person) => { return person.name }).join('\r\n')}`}
+        
         -------------------------
         ${chalk.bgWhite.black('Film Appearances:')}
-
         ${films.length == 0 ? `No Film Appearances` : `${films.map((movie) => { return movie.title }).join('\r\n')}`}
         `
         console.log(indentString(information, 8))
@@ -273,15 +268,18 @@ const printStarships = (result) => {
         Manufacturer: ${manufacturer}
         Price: ${cost_in_credits} Credits
         Starship Class: ${starship_class}
+        
         -------------------------
         ${chalk.bgWhite.black('Specifications:')}
         It can support a crew of ${crew} and can carry ${passengers} passengers
         Atmospheric Speed is ${max_atmosphering_speed} and is ${length} meters long
         Hyperdrive Rating: ${hyperdrive_rating}
         MegaLight Speed: ${MGLT}
+        
         -------------------------
         ${chalk.bgWhite.black('Film Appearances:')}
         ${films.length == 0 ? `No Film Appearances` : `${films.map((movie) => { return movie.title }).join('\r\n')}`}
+        
         -------------------------
         ${chalk.bgWhite.black('Famous Pilots:')}
         ${pilots.length == 0 ? `No famous pilots have used the ${name}` : `${pilots.map((pilot) => { return pilot.name }).join('\r\n')}`}
@@ -317,14 +315,17 @@ const printVehicles = (result) => {
         Manufacturer: ${manufacturer}
         Price: ${cost_in_credits} Credits
         Vehicle Class: ${vehicle_class}
+        
         -------------------------
         ${chalk.bgWhite.black('Specifications:')}
         It can support a crew of ${crew} and can carry ${passengers} passengers
         Atmospheric Speed is ${max_atmosphering_speed} and is ${length} meters long
+        
         -------------------------
         Film Appearances:
         ${chalk.bgWhite.black('Film Appreances:')}
         ${films.length == 0 ? `No Film Appearances` : `${films.map((movie) => { return movie.title }).join('\r\n')}`}
+        
         -------------------------
         ${chalk.bgWhite.black('Famous Pilots:')}
         ${pilots.length == 0 ? `No famous pilots have used the ${name}` : `${pilots.map((pilot) => { return pilot.name }).join('\r\n')}`}
