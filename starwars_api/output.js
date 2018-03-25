@@ -1,3 +1,7 @@
+// Patrick Flinner, Bryan Bravo, Gevorg Khachatrian, Kevin Lam
+// CS4220
+// Midterm
+
 const inquirer = require('inquirer'),
     url = require('calls'),
     chalk = require('chalk'),
@@ -159,21 +163,21 @@ const printPlanets = (result) => {
             `
     ${chalk.bgBlue(name)}
     ----------------------------------------------
-    Characteristics:
-    Day Length: ${rotation_period} Earth Hours
-    Year Length:${orbital_period} Earth Days
-    Climate: ${climate} 
-    Terrain: ${terrain}
-    Water: ${surface_water}% Water 
-    Planet Diameter: ${diameter} km
-    Population: ${population} Citizens
+    ${chalk.bgWhite.black('Characteristics:')}
+    ${chalk.cyan('Day Length:')} ${rotation_period} Earth Hours
+    ${chalk.cyan('Year Length:')} ${orbital_period} Earth Days
+    ${chalk.cyan('Climate:')} ${climate} 
+    ${chalk.cyan('Terrain:')} ${terrain}
+    ${chalk.cyan('Water:')} ${surface_water}% Water 
+    ${chalk.cyan('Planet Diameter:')} ${diameter} km
+    ${chalk.cyan('Population:')} ${population} Citizens
 
     ----------------------------------------------
-    Notable Residents:
+    ${chalk.bgWhite.black('Notable Residents:')}
     ${residents.length == 0 ? `No Notable Residents Reside on ${name}` : `${residents.map((character) => { return character.name }).join('\r\n')}`}
 
     ----------------------------------------------
-    Film Appearances:
+    ${chalk.bgWhite.black('Film Appearances:')}
     ${films.length == 0 ? `No Film Appearances` : `${films.map((film) => { return film.title }).join('\r\n')}`}
 
     `
@@ -184,9 +188,7 @@ const printPlanets = (result) => {
 const printSpecies = (result) => {
 
     let { name, classification, designation, average_height, skin_colors, hair_colors, eye_colors, average_lifespan, homeworld, language, people, films } = result
-    // homeworld = homeworld.map((homeURL) => {
-    //     return url.fetchURL(homeURL)
-    // })
+
     people = people.map((peopleURL) => {
         return url.fetchURL(peopleURL)
     })
@@ -196,7 +198,7 @@ const printSpecies = (result) => {
 
 
     homeworldPr = []
-    homeworldPr.push(url.link(homeworld))
+    homeworldPr.push(url.fetchURL(homeworld))
 
     const promiseArray = [homeworldPr, people, films]
 
@@ -211,24 +213,24 @@ const printSpecies = (result) => {
         ${chalk.bgBlue(name)}
         ----------------------------
         ${chalk.bgWhite.black('Statistics:')}
-        Avg. Height:   ${average_height}
-        Avg. LifeSpan: ${average_lifespan}
+        ${chalk.cyan('Avg. Height:')}   ${average_height}
+        ${chalk.cyan('Avg. LifeSpan:')} ${average_lifespan}
 
         ----------------------------
         ${chalk.bgWhite.black('Colorings:')}
-        Skin Colors: ${skin_colors}
-        Hair Colors: ${hair_colors}
-        Eye  Colors: ${eye_colors}
+        ${chalk.cyan('Skin Colors:')} ${skin_colors}
+        ${chalk.cyan('Hair Colors:')} ${hair_colors}
+        ${chalk.cyan('Eye  Colors:')} ${eye_colors}
 
         ----------------------------
         ${chalk.bgWhite.black('World:')}
         ${homeworld.map(planet => { return planet.name }).join(', ')}
-        Language: ${language}
+        ${chalk.cyan('Language:')} ${language}
 
         ----------------------------
         ${chalk.bgWhite.black('Taxonomy:')}
-        Designation: ${designation}
-        Classification: ${classification}
+        ${chalk.cyan('Designation:')} ${designation}
+        ${chalk.cyan('Classification:')} ${classification}
 
         ----------------------------------------------
         ${chalk.bgWhite.black('Notable Characters:')}
@@ -264,17 +266,17 @@ const printStarships = (result) => {
             `
         ${chalk.bgBlue(name)}
          
-        Model: ${model}
-        Manufacturer: ${manufacturer}
-        Price: ${cost_in_credits} Credits
-        Starship Class: ${starship_class}
+        ${chalk.cyan('Model:')} ${model}
+        ${chalk.cyan('Manufacturer:')} ${manufacturer}
+        ${chalk.cyan('Price:')} ${cost_in_credits} Credits
+        ${chalk.cyan('Starship Class:')} ${starship_class}
         
         -------------------------
         ${chalk.bgWhite.black('Specifications:')}
         It can support a crew of ${crew} and can carry ${passengers} passengers
         Atmospheric Speed is ${max_atmosphering_speed} and is ${length} meters long
-        Hyperdrive Rating: ${hyperdrive_rating}
-        MegaLight Speed: ${MGLT}
+        ${chalk.cyan('Hyperdrive Rating:')} ${hyperdrive_rating}
+        ${chalk.cyan('MegaLight Speed:')} ${MGLT}
         
         -------------------------
         ${chalk.bgWhite.black('Film Appearances:')}
@@ -311,10 +313,10 @@ const printVehicles = (result) => {
             `
         ${chalk.bgBlue(name)}
          
-        Model: ${model}
-        Manufacturer: ${manufacturer}
-        Price: ${cost_in_credits} Credits
-        Vehicle Class: ${vehicle_class}
+        ${chalk.cyan('Model:')} ${model}
+        ${chalk.cyan('Manufacturer:')} ${manufacturer}
+        ${chalk.cyan('Price:')} ${cost_in_credits} Credits
+        ${chalk.cyan('Vehicle Class:')} ${vehicle_class}
         
         -------------------------
         ${chalk.bgWhite.black('Specifications:')}
@@ -322,7 +324,7 @@ const printVehicles = (result) => {
         Atmospheric Speed is ${max_atmosphering_speed} and is ${length} meters long
         
         -------------------------
-        Film Appearances:
+        ${chalk.bgWhite.black('Film Appearances:')}
         ${chalk.bgWhite.black('Film Appreances:')}
         ${films.length == 0 ? `No Film Appearances` : `${films.map((movie) => { return movie.title }).join('\r\n')}`}
         
