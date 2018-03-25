@@ -5,6 +5,8 @@ const inquirer = require('inquirer'),
     url = require('calls'),
     chalk = require('chalk'),
     ora = require('ora'),
+    outdent = require('outdent'),
+    indentString = require('indent-string'),
     catArray = ['films', 'people', 'planets', 'species', 'starships', 'vehicles']
 
 
@@ -187,7 +189,7 @@ const printFilm = (result) => {
     Promise.all(promiseArray.map(Promise.all, Promise)).then(([characters, planets, starships, vehicles, species]) => {
         spinner.stop()
 
-        let information =
+        let information = outdent
             `
         ${chalk.bgBlue('Star Wars')}
         ${chalk.bgBlue('Episode ' + episode_id)}
@@ -200,20 +202,20 @@ const printFilm = (result) => {
         
         ------------------------
         ${chalk.bgWhite.black('Notable Characters:')}
-        ${characters.length == 0 ? `No Notable Characters` : `${characters.map((character) => { return '        ' + character.name }).join('\r\n')}`}
+        ${characters.length == 0 ? `No Notable Characters` : `${characters.map((character) => { return character.name }).join('\r\n')}`}
         
         ------------------------
         ${chalk.bgWhite.black('Planets:')}
-        ${planets.length == 0 ? `No Recorded Planets` : `${planets.map((planet) => { return `\r\n\t` + planet.name }).join('')}`}
+        ${planets.length == 0 ? `No Recorded Planets` : `${planets.map((planet) => { return planet.name }).join('\r\n')}`}
         
         ------------------------
         ${chalk.bgWhite.black('Ships and Vehicles:')}
-        ${starships.length == 0 ? `No Notable Ships` : `${starships.map((starship) => { return `\r\n\t` + starship.name }).join('')}`}
-        ${vehicles.length == 0 ? `No Notable Vehicles` : `${vehicles.map((vehicle) => { return `\r\n\t` + vehicle.name }).join('')}`}
+        ${starships.length == 0 ? `No Notable Ships` : `${starships.map((starship) => { return starship.name }).join('\r\n')}`}
+        ${vehicles.length == 0 ? `No Notable Vehicles` : `${vehicles.map((vehicle) => { return vehicle.name }).join('\r\n')}`}
         
         -----------------------
         ${chalk.bgWhite.black('Species in the movie:')}
-        ${species.length == 0 ? `No Notable Species` : `${species.map((species) => { return `\r\n\t` + species.name }).join('')}`}
+        ${species.length == 0 ? `No Notable Species` : `${species.map((species) => { return species.name }).join('\r\n')}`}
         
         -----------------------
         ${chalk.bgWhite.black('Opening Crawl:')}
@@ -222,7 +224,7 @@ const printFilm = (result) => {
         
         
         `
-        console.log(information)
+        console.log(indentString(information, 8))
     })
 
 
@@ -235,8 +237,8 @@ const printPeople = (result) => {
         return url.fetchURL(filmURL)
     })
 
-   // homeworld = url.fetchURL(homeworld)
-    homeworldPr=[]
+    // homeworld = url.fetchURL(homeworld)
+    homeworldPr = []
     homeworldPr.push(url.fetchURL(homeworld))
     starships = starships.map((starshipsURL) => {
         return url.fetchURL(starshipsURL)
@@ -248,30 +250,30 @@ const printPeople = (result) => {
     species = species.map(speciesURL => {
         return url.fetchURL(speciesURL)
     })
-    const promiseArray = [films,homeworldPr, starships, vehicles, species]
+    const promiseArray = [films, homeworldPr, starships, vehicles, species]
 
     const spinner = ora('Fetching detailed information...').start();
-    Promise.all(promiseArray.map(Promise.all, Promise)).then(([films, homeworld,starships, vehicles, species]) => {
+    Promise.all(promiseArray.map(Promise.all, Promise)).then(([films, homeworld, starships, vehicles, species]) => {
         spinner.stop()
-        let information =
+        let information = outdent
             `
         ${name}
         ------------
         Height:  ${hair_color.length < 8 ? `${height} cm` : `${height} cm\t`}\tWeight: ${mass} kg\tGender: ${gender}
         Hair:    ${hair_color}\tEye: ${eye_color}\tSkin: ${skin_color}
         Born:    ${birth_year}
-        Species: ${species.map(species=>{return ` `+species.name}).join('')}
-        Home World: ${homeworld.map(planet=>{return ` `+planet.name}).join('')}
+        Species: ${species.map(species => { return species.name }).join(', ')}
+        Home World: ${homeworld.map(planet => { return planet.name }).join(', ')}
 
         ---------------------------------------------------------------
         Vehicles Used:
-        ${starships.length == 0 ? `No Notable Ships` : `${starships.map((starship) => { return `\r\n\t` + starship.name }).join('')}`}
-        ${vehicles.length == 0 ? `No Notable Vehicles` : `${vehicles.map((vehicle) => { return `\r\n\t` + vehicle.name }).join('')}`}
+        ${starships.length == 0 ? `No Notable Ships` : `${starships.map((starship) => { return starship.name }).join('\r\n')}`}
+        ${vehicles.length == 0 ? `No Notable Vehicles` : `${vehicles.map((vehicle) => { return vehicle.name }).join('\r\n')}`}
         ---------------------------------------------------------------
         Film Appearances:
-        ${films.length == 0 ? `No Film Appearances` : `${films.map((film) => { return `\r\n\t` + film.title }).join('')}`}
+        ${films.length == 0 ? `No Film Appearances` : `${films.map((film) => { return film.title }).join('\r\n')}`}
         `
-        console.log(information)
+        console.log(indentString(information, 8))
     })
 }
 
@@ -289,7 +291,7 @@ const printPlanets = (result) => {
     const spinner = ora('Fetching detailed information...').start();
     Promise.all(promiseArray.map(Promise.all, Promise)).then(([films, residents]) => {
         spinner.stop();
-        let information =
+        let information = outdent
             `
     ${name}
     ----------------------------------------------
@@ -306,21 +308,21 @@ const printPlanets = (result) => {
     ----------------------------------------------
     Notable Residents:
 
-    ${residents.length == 0 ? `No Notable Residents Reside on ${name}` : `${residents.map((character) => { return `\r\n    ` + character.name }).join('')}`}
+    ${residents.length == 0 ? `No Notable Residents Reside on ${name}` : `${residents.map((character) => { return character.name }).join('\r\n')}`}
 
     ----------------------------------------------
     Film Appearances:
     
-    ${films.length == 0 ? `No Film Appearances` : `${films.map((film) => { return `\r\n    ` + film.title }).join('')}`}
+    ${films.length == 0 ? `No Film Appearances` : `${films.map((film) => { return film.title }).join('\r\n')}`}
 
     `
-        console.log(information)
+        console.log(indentString(information, 8))
     })
 }
 
-const printSpecies=(result)=>{
+const printSpecies = (result) => {
 
-    let {name,classification,designation,average_height,skin_colors,hair_colors,eye_colors,average_lifespan,homeworld,language,people,films}=result
+    let { name, classification, designation, average_height, skin_colors, hair_colors, eye_colors, average_lifespan, homeworld, language, people, films } = result
     // homeworld = homeworld.map((homeURL) => {
     //     return url.fetchURL(homeURL)
     // })
@@ -331,20 +333,20 @@ const printSpecies=(result)=>{
         return url.fetchURL(filmURL)
     })
 
-    
+
     homeworldPr = []
     homeworldPr.push(url.link(homeworld))
 
-    const promiseArray = [homeworldPr,people, films]
+    const promiseArray = [homeworldPr, people, films]
 
-    
+
 
     const spinner = ora('Fetching detailed information...').start();
-        Promise.all(promiseArray.map(Promise.all, Promise)).then(([homeworld, people, films]) => {
-                    spinner.stop()
+    Promise.all(promiseArray.map(Promise.all, Promise)).then(([homeworld, people, films]) => {
+        spinner.stop()
 
-        let information=
-        `
+        let information =
+            `
         ${name}
         ----------------------------
         ${chalk.bgWhite.black('Statistics:')}
@@ -359,7 +361,7 @@ const printSpecies=(result)=>{
         Eye  Colors: ${eye_colors}
         ----------------------------
         ${chalk.bgWhite.black('World:')}
-        ${homeworld.map(planet => {return '' +planet.name}).join('')}
+        ${homeworld.map(planet => { return planet.name }).join(', ')}
         Language: ${language}
         ----------------------------
         ${chalk.bgWhite.black('Taxonomy:')}
@@ -369,35 +371,35 @@ const printSpecies=(result)=>{
         ----------------------------------------------
         ${chalk.bgWhite.black('Notable Characters:')}
 
-${people.length==0 ? `No Notable Characters` : `${people.map((person) => { return '        ' + person.name }).join('\r\n')}`}
+        ${people.length == 0 ? `No Notable Characters` : `${people.map((person) => { return person.name }).join('\r\n')}`}
         -------------------------
         ${chalk.bgWhite.black('Film Appearances:')}
 
-${films.length==0 ? `No Film Appearances` : `${films.map((movie) => { return '        ' + movie.title }).join('\r\n')}`}
+        ${films.length == 0 ? `No Film Appearances` : `${films.map((movie) => { return movie.title }).join('\r\n')}`}
         `
-    console.log(information)
-        })
+        console.log(indentString(information, 8))
+    })
 }
 
-const printStarships=(result)=>{
-    let {name,model,manufacturer,cost_in_credits,length,max_atmosphering_speed,crew,passengers,cargo_capacity,
-        consumables,hyperdrive_rating,MGLT,starship_class,pilots,films}=result
-    
-    films = films.map((filmURL) => {
-            return url.fetchURL(filmURL)
-   })
+const printStarships = (result) => {
+    let { name, model, manufacturer, cost_in_credits, length, max_atmosphering_speed, crew, passengers, cargo_capacity,
+        consumables, hyperdrive_rating, MGLT, starship_class, pilots, films } = result
 
-   pilots = pilots.map((pilotURL) => {
+    films = films.map((filmURL) => {
+        return url.fetchURL(filmURL)
+    })
+
+    pilots = pilots.map((pilotURL) => {
         return url.fetchURL(pilotURL)
     })
-    
-    const promiseArray = [films,pilots]
-    
-    const spinner = ora('Fetching detailed information...').start();
-    Promise.all(promiseArray.map(Promise.all, Promise)).then(([films,pilots]) => {
-                     spinner.stop()
 
-        let information=
+    const promiseArray = [films, pilots]
+
+    const spinner = ora('Fetching detailed information...').start();
+    Promise.all(promiseArray.map(Promise.all, Promise)).then(([films, pilots]) => {
+        spinner.stop()
+
+        let information =
             `
         ${name}
          
@@ -413,36 +415,36 @@ const printStarships=(result)=>{
         MegaLight Speed: ${MGLT}
         -------------------------
         ${chalk.bgWhite.black('Film Appearances:')}
-${films.length==0 ? `No Film Appearances` : `${films.map((movie) => { return '        ' + movie.title }).join('\r\n')}`}
+        ${films.length == 0 ? `No Film Appearances` : `${films.map((movie) => { return movie.title }).join('\r\n')}`}
         -------------------------
         ${chalk.bgWhite.black('Famous Pilots:')}
-        ${pilots.length==0 ? `No famous pilots have used the ${name}` : `${pilots.map((pilot) => { return '        ' + pilot.name }).join('\r\n')}`}
+        ${pilots.length == 0 ? `No famous pilots have used the ${name}` : `${pilots.map((pilot) => { return pilot.name }).join('\r\n')}`}
     
         `
-    console.log(information)
+        console.log(indentString(information, 8))
     })
 }
 
-const printVehicles=(result)=>{
-    let {name,model,manufacturer,cost_in_credits,length,max_atmosphering_speed,crew,passengers,cargo_capacity,
-        consumables,vehicle_class,pilots,films}=result
+const printVehicles = (result) => {
+    let { name, model, manufacturer, cost_in_credits, length, max_atmosphering_speed, crew, passengers, cargo_capacity,
+        consumables, vehicle_class, pilots, films } = result
 
     films = films.map((filmURL) => {
-            return url.fetchURL(filmURL)
-   })
-
-   pilots = pilots.map((pilotURL) => {
-    return url.fetchURL(pilotURL)
+        return url.fetchURL(filmURL)
     })
-    
+
+    pilots = pilots.map((pilotURL) => {
+        return url.fetchURL(pilotURL)
+    })
+
     const promiseArray = [films, pilots]
-    
+
     const spinner = ora('Fetching detailed information...').start();
     Promise.all(promiseArray.map(Promise.all, Promise)).then(([films, pilots]) => {
-                     spinner.stop()
-    
-        let information=
-        `
+        spinner.stop()
+
+        let information =
+            `
         ${name}
          
         Model: ${model}
@@ -456,13 +458,13 @@ const printVehicles=(result)=>{
         -------------------------
         Film Appearances:
         ${chalk.bgWhite.black('Film Appreances:')}
-${films.length==0 ? `No Film Appearances` : `${films.map((movie) => { return '        ' + movie.title }).join('\r\n')}`}
+        ${films.length == 0 ? `No Film Appearances` : `${films.map((movie) => { return movie.title }).join('\r\n')}`}
         -------------------------
         ${chalk.bgWhite.black('Famous Pilots:')}
-${pilots.length==0 ? `No famous pilots have used the ${name}` : `${pilots.map((pilot) => { return '        ' + pilot.name }).join('\r\n')}`}
+        ${pilots.length == 0 ? `No famous pilots have used the ${name}` : `${pilots.map((pilot) => { return pilot.name }).join('\r\n')}`}
 
         `
-    console.log(information)
+        console.log(indentString(information, 8))
     })
 }
 
