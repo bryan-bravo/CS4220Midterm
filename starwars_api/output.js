@@ -38,6 +38,11 @@ const printSelection = (catagory, result) => {
 /* Below functions all work the same, but each has a different template*/
 const printFilm = (result) => {
     let { title, episode_id, opening_crawl, director, producer, release_date, characters, planets, starships, vehicles, species } = result
+    /*
+        Sadly, the following arrays are returned as URLs, so we must resolve them before displaying.
+        As each is an array of endpoint URLs, we remap them to be promises to fetch the URL data
+    */
+    
     characters = characters.map((charURL) => {
         return url.fetchURL(charURL)
     })
@@ -53,12 +58,27 @@ const printFilm = (result) => {
     species = species.map(speciesURL => {
         return url.fetchURL(speciesURL)
     })
+
+    // Define a new array of promise arrays (an array of arrays of promises)
     const promiseArray = [characters, planets, starships, vehicles, species]
 
+    // Show nice spinner while resolving this relative data
     const spinner = ora('Fetching detailed information...').start();
+
+    /* 
+        Overexplanation for the following Promise.all line:
+        We map each element of this promise-array-array (which are each a promise-array), 
+        calling Promise.all on each element. Thus, each of these promise-arrays are now represented
+        by the single Promise.all.
+        Now we have an array of promises (each element being a Promise.all statement for the previous arrays).
+        We call Promise.all on this, to resolve all promises in all arrays.
+        Then we return the results, containing the full data.
+    */
     Promise.all(promiseArray.map(Promise.all, Promise)).then(([characters, planets, starships, vehicles, species]) => {
         spinner.stop()
 
+        // Use outdent to remove leading whitespace
+        // Not-ideal alternative would be to manually remove whitespace in our backticks, which would impact readability
         let information = outdent
             `
         ${chalk.bgBlue('Star Wars')}
@@ -91,20 +111,19 @@ const printFilm = (result) => {
         ${opening_crawl}
         
         `
+        // Since we used outdent, everything is already aligned on the first column
+        // Use indentString to indent each line
         console.log(indentString(information, 8))
     })
-
-
-
 }
 
+// See comments for printFilm
 const printPeople = (result) => {
     let { name, height, mass, hair_color, skin_color, eye_color, birth_year, gender, homeworld, films, species, vehicles, starships } = result
     films = films.map((filmURL) => {
         return url.fetchURL(filmURL)
     })
 
-    // homeworld = url.fetchURL(homeworld)
     homeworldPr = []
     homeworldPr.push(url.fetchURL(homeworld))
     starships = starships.map((starshipsURL) => {
@@ -147,6 +166,7 @@ const printPeople = (result) => {
     })
 }
 
+// See comments for printFilm
 const printPlanets = (result) => {
     let { name, rotation_period, orbital_period, diameter, climate, gravity, terrain, surface_water, population, residents, films } = result
 
@@ -187,6 +207,7 @@ const printPlanets = (result) => {
     })
 }
 
+// See comments for printFilm
 const printSpecies = (result) => {
 
     let { name, classification, designation, average_height, skin_colors, hair_colors, eye_colors, average_lifespan, homeworld, language, people, films } = result
@@ -246,6 +267,7 @@ const printSpecies = (result) => {
     })
 }
 
+// See comments for printFilm
 const printStarships = (result) => {
     let { name, model, manufacturer, cost_in_credits, length, max_atmosphering_speed, crew, passengers, cargo_capacity,
         consumables, hyperdrive_rating, MGLT, starship_class, pilots, films } = result
@@ -293,6 +315,7 @@ const printStarships = (result) => {
     })
 }
 
+// See comments for printFilm
 const printVehicles = (result) => {
     let { name, model, manufacturer, cost_in_credits, length, max_atmosphering_speed, crew, passengers, cargo_capacity,
         consumables, vehicle_class, pilots, films } = result
