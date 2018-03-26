@@ -11,6 +11,7 @@ const inquirer = require('inquirer'),
     //catArray = ['films', 'people', 'planets', 'species', 'starships', 'vehicles']
 
 
+//Creates inquire prompts 
 const choicesList = (choiceArray, message, name) => {
     return inquirer.prompt([{
         type: 'list',
@@ -69,14 +70,22 @@ const main = (type, query) => {
     }
 }
 
+//Begins the process of finding search results
 const search = (query) => {
+    
+    //Dynamically gather the categories to search from
     url.fetchURL(categoryURL).then(result => {
         let catArray = Object.keys(result)
 
         let results = [];
+
+        //Sends the categories to a inquire list prompt
         choicesList(catArray, 'Select a field to search', 'Catagories').then(res => {
+
+            //Searches based off the selected category
             url.search(res.Catagories, query)
                 .then(result => {
+                    //Creates two arrays. One with the results, and one with just the name
                     result.results.forEach(element => {
                         results.push(element)
                     })
@@ -92,8 +101,12 @@ const search = (query) => {
                             else
                                 nameList.push(element.name)
                         })
+
+                        //Passes the result names to the checkbox prompt
                         choicesCheckbox(nameList, 'Select what to examine in detail', 'Selection')
                             .then(result => {
+
+                                //Reduces the choices to the selected results and sends it to be printed
                                 if (res.Catagories == 'films')
                                     resultList = reduceChoicesFilm(results, result.Selection)
                                 else
@@ -108,10 +121,13 @@ const search = (query) => {
     })
 }
 
+//Fetches a result using an id
 const fetch = (id) => {
+    //Dynamically creates the category array
     url.fetchURL(categoryURL).then(result => {
         let catArray = Object.keys(result)
 
+        //User selects what to find and then it is sent to the print function
         choicesList(catArray, 'Select a field to search', 'Catagories').then(res => {
             url.fetch(res.Catagories, id)
                 .then(result => {
@@ -125,6 +141,8 @@ const fetch = (id) => {
     })
 }
 
+
+//Reduces the choices for everything but films
 const reduceChoices = (current, reduce) => {
     let reducedList = []
     reduce.forEach(element => {

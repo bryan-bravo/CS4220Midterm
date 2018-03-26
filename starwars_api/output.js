@@ -9,6 +9,7 @@ const inquirer = require('inquirer'),
     outdent = require('outdent'),
     indentString = require('indent-string')
 
+//Switch statement to send results to correct print function
 const printSelection = (catagory, result) => {
     switch (catagory) {
         case 'films':
@@ -34,6 +35,7 @@ const printSelection = (catagory, result) => {
     }
 }
 
+/* Below functions all work the same, but each has a different template*/
 const printFilm = (result) => {
     let { title, episode_id, opening_crawl, director, producer, release_date, characters, planets, starships, vehicles, species } = result
     characters = characters.map((charURL) => {
